@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -27,16 +29,18 @@ public abstract class WirelessDevice {
     private Long id;
     private String modelName;
     private String manufacturer;
-    private double minFrequency;
-    private double maxFrequency;
+
+    @ManyToOne
+    @JoinColumn(name = "frequency_band_id")
+    private FrequencyBand frequencyBand;
 
     // Polymorphism: Abstract method to be overridden by subclasses
     public abstract String getDeviceCategory();
 
     // Polymorphism: A standard method that subclasses could optionally override
     public boolean checkLegalStatus() {
-        // Basic FCC compliance check example (e.g., checking against the illegal 600MHz band)
-        if (maxFrequency > 614.0 && minFrequency < 698.0) {
+        // Now uses the related FrequencyBand object for its logic
+        if (frequencyBand != null && frequencyBand.getMaxFreq() > 614.0 && frequencyBand.getMinFreq() < 698.0) {
             return false; // Falls within restricted US bands
         }
         return true;
