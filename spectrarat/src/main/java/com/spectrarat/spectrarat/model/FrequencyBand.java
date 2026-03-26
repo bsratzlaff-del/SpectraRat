@@ -18,6 +18,11 @@ import lombok. ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+public FrequencyBand(String bandName, double minFreq, double maxFreq) {
+    this.bandName = bandName;
+    this.minFreq = minFreq;
+    this.maxFreq = maxFreq;
+}
 public class FrequencyBand{
 
     @Id
