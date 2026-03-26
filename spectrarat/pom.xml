@@ -93,21 +93,8 @@
 							<artifactId>lombok</artifactId>
 						</exclude>
 					</excludes>
+					<jmxPort>9002</jmxPort> <!-- Use a different JMX port for the plugin -->
 				</configuration>
-				<executions>
-					<execution>
-						<id>pre-integration-test</id>
-						<goals>
-							<goal>start</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>post-integration-test</id>
-						<goals>
-							<goal>stop</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok. ToString;
+import lombok.ToString;
 
 @Entity
 @Table(name = "frequency_bands")
@@ -18,12 +18,7 @@ import lombok. ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public FrequencyBand(String bandName, double minFreq, double maxFreq) {
-    this.bandName = bandName;
-    this.minFreq = minFreq;
-    this.maxFreq = maxFreq;
-}
-public class FrequencyBand{
+public class FrequencyBand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,4 +27,10 @@ public class FrequencyBand{
     private String bandName; // e.g., "G50", "A1"
     private double minFreq;
     private double maxFreq;
+
+    public FrequencyBand(String bandName, double minFreq, double maxFreq) {
+        this.bandName = bandName;
+        this.minFreq = minFreq;
+        this.maxFreq = maxFreq;
+    }
 }
