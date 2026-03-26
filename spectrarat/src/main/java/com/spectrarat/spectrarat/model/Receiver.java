@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +30,7 @@ public class Receiver extends WirelessDevice {
 
     private String receiverType;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
         name = "receiver_microphones",
         joinColumns = @JoinColumn(name = "receiver_id"),
@@ -39,7 +38,7 @@ public class Receiver extends WirelessDevice {
     )
     private List<Microphone> compatibleMicrophones = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
         name = "receiver_frequency_bands",
         joinColumns = @JoinColumn(name = "receiver_id"),

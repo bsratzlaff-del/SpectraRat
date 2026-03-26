@@ -23,7 +23,7 @@ import com.spectrarat.spectrarat.repository.MicrophoneRepository;
 import com.spectrarat.spectrarat.repository.ReceiverRepository;
 
 @SpringBootTest
-@AutoConfigureMockMvc // Tells Spring Boot to prepare a MockMvc instance
+@AutoConfigureMockMvc(addFilters=false)// Tells Spring Boot to prepare a MockMvc instance
 class SpectraratApplicationTests {
 
 	@Autowired

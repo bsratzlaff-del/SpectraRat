@@ -20,14 +20,14 @@ public class FccApiService {
     // Method to identify FCC spectrum bands (static list based on frequency allocation table)
     public List<FrequencyBand> getFccSpectrumBands() {
         return Arrays.asList(
-            new FrequencyBand("VLF", 3, 30), // Very Low Frequency
-            new FrequencyBand("LF", 30, 300), // Low Frequency
-            new FrequencyBand("MF", 300, 3000), // Medium Frequency
-            new FrequencyBand("HF", 3000, 30000), // High Frequency
-            new FrequencyBand("VHF", 30000, 300000), // Very High Frequency
-            new FrequencyBand("UHF", 300000, 3000000), // Ultra High Frequency
-            new FrequencyBand("SHF", 3000000, 30000000), // Super High Frequency
-            new FrequencyBand("EHF", 30000000, 300000000) // Extremely High Frequency
+            new FrequencyBand(null, "VLF", 3.0, 30.0), // Very Low Frequency
+            new FrequencyBand(null, "LF", 30.0, 300.0), // Low Frequency
+            new FrequencyBand(null, "MF", 300.0, 3000.0), // Medium Frequency
+            new FrequencyBand(null, "HF", 3000.0, 30000.0), // High Frequency
+            new FrequencyBand(null, "VHF", 30000.0, 300000.0), // Very High Frequency
+            new FrequencyBand(null, "UHF", 300000.0, 3000000.0), // Ultra High Frequency
+            new FrequencyBand(null, "SHF", 3000000.0, 30000000.0), // Super High Frequency
+            new FrequencyBand(null, "EHF", 30000000.0, 300000000.0) // Extremely High Frequency
         );
     }
 

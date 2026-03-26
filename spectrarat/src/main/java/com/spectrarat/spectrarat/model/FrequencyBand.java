@@ -27,10 +27,4 @@ public class FrequencyBand {
     private String bandName; // e.g., "G50", "A1"
     private double minFreq;
     private double maxFreq;
-
-    public FrequencyBand(String bandName, double minFreq, double maxFreq) {
-        this.bandName = bandName;
-        this.minFreq = minFreq;
-        this.maxFreq = maxFreq;
-    }
 }
