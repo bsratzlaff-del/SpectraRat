@@ -9,14 +9,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok. ToString;
 
 @Entity
 @Table(name = "frequency_bands")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class FrequencyBand {
+public class FrequencyBand{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

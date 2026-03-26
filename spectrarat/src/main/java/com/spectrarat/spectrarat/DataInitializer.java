@@ -5,13 +5,13 @@ import java.util.List;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import com.spectrarat.spectrarat.model.FrequencyBand;
 import com.spectrarat.spectrarat.model.Microphone;
 import com.spectrarat.spectrarat.model.Receiver;
 import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
 import com.spectrarat.spectrarat.repository.MicrophoneRepository;
 import com.spectrarat.spectrarat.repository.ReceiverRepository;
+
 
 @Configuration
 public class DataInitializer {
@@ -74,19 +74,16 @@ public class DataInitializer {
             Microphone sm58 = new Microphone();
             sm58.setManufacturer("Shure");
             sm58.setModelName("SM58");
-            sm58.setCapsuleType("Dynamic");
             sm58.setCost(99.00);
 
             Microphone beta87 = new Microphone();
             beta87.setManufacturer("Shure");
             beta87.setModelName("Beta87");
-            beta87.setCapsuleType("Condenser");
             beta87.setCost(249.00);
             
             Microphone ksm8 = new Microphone();
             ksm8.setManufacturer("Shure");
             ksm8.setModelName("KSM8");
-            ksm8.setCapsuleType("Condenser");
             ksm8.setCost(399.00);
 
             microphoneRepository.save(sm58);
@@ -96,19 +93,6 @@ public class DataInitializer {
             System.out.println("\nInitialized Microphones:");
             microphoneRepository.findAll().forEach(System.out::println);
 
-            // Derive compatible microphone types from Microphone repository for consistency
-            List<Microphone> allMicrophones = microphoneRepository.findAll();
-            String dynamicType = allMicrophones.stream()
-                    .map(Microphone::getCapsuleType)
-                    .findFirst().orElse("Dynamic");
-            String condenserType = allMicrophones.stream()
-                    .map(Microphone::getCapsuleType)
-                    .filter(type -> "Condenser".equalsIgnoreCase(type))
-                    .findFirst().orElse("Condenser");
-            List<String> allMicrophoneTypes = allMicrophones.stream()
-                    .map(Microphone::getCapsuleType)
-                    .distinct()
-                    .toList();
 
             // 3. Add receivers, linking to frequency band/mic type/cost
             Receiver rx1 = new Receiver();

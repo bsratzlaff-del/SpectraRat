@@ -3,7 +3,6 @@ package com.spectrarat.spectrarat.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,11 +14,13 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "receivers")
 @Getter
 @Setter
+@ToString
 @NoArgsConstructor
 public class Receiver extends WirelessDevice {
 
@@ -28,10 +29,6 @@ public class Receiver extends WirelessDevice {
     private Long id;
 
     private String receiverType;
-    private String compatibleMicrophoneType;
-
-    @ElementCollection
-    private List<String> compatibleMicrophoneTypes = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
