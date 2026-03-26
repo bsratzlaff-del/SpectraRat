@@ -1,10 +1,7 @@
 package com.spectrarat.spectrarat;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spectrarat.spectrarat.model.FrequencyBand;
-import com.spectrarat.spectrarat.model.Microphone;
-import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
-import com.spectrarat.spectrarat.repository.MicrophoneRepository;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,13 +10,17 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spectrarat.spectrarat.model.FrequencyBand;
+import com.spectrarat.spectrarat.model.Microphone;
+import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
+import com.spectrarat.spectrarat.repository.MicrophoneRepository;
+import com.spectrarat.spectrarat.repository.ReceiverRepository;
 
 @SpringBootTest
 @AutoConfigureMockMvc // Tells Spring Boot to prepare a MockMvc instance
@@ -35,10 +36,14 @@ class SpectraratApplicationTests {
 	private MicrophoneRepository microphoneRepository; // To clean up the DB
 
 	@Autowired
+	private ReceiverRepository receiverRepository; // To clean up the DB
+
+	@Autowired
 	private ObjectMapper objectMapper; // To convert Java objects to JSON strings
 
 	@BeforeEach
 	void setUp() {
+		receiverRepository.deleteAll();
 		microphoneRepository.deleteAll();
 		frequencyBandRepository.deleteAll();
 	}
@@ -46,6 +51,7 @@ class SpectraratApplicationTests {
 	@AfterEach
 	void tearDown() {
 		// Clean the database after each test to ensure tests are independent
+		receiverRepository.deleteAll();
 		microphoneRepository.deleteAll();
 		frequencyBandRepository.deleteAll();
 	}

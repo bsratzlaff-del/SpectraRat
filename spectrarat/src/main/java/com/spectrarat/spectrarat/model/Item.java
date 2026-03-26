@@ -10,23 +10,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "microphones")
+@Table(name = "items")
 @Getter
 @Setter
 @NoArgsConstructor
-// Inheritance: Microphone "is a" WirelessDevice
-public class Microphone extends WirelessDevice {
+public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String capsuleType;
+    private String name;
+    private double cost;
 
-    
-    // Polymorphism: Overriding the abstract method from the parent class
-    @Override
-    public String getDeviceCategory() {
-        return "Transmitter / Microphone";
+    public Item(String name, double cost) {
+        this.name = name;
+        this.cost = cost;
     }
 }
