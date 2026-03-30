@@ -8,8 +8,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spectrarat.spectrarat.model.FrequencyBand;
 import com.spectrarat.spectrarat.model.Microphone;
 import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
+import com.spectrarat.spectrarat.repository.CustomerRepository;
 import com.spectrarat.spectrarat.repository.MicrophoneRepository;
 import com.spectrarat.spectrarat.repository.ReceiverRepository;
 
@@ -39,10 +45,14 @@ class SpectraratApplicationTests {
 	private ReceiverRepository receiverRepository; // To clean up the DB
 
 	@Autowired
+	private CustomerRepository customerRepository; // To clean up the DB
+
+	@Autowired
 	private ObjectMapper objectMapper; // To convert Java objects to JSON strings
 
 	@BeforeEach
 	void setUp() {
+		customerRepository.deleteAll();
 		receiverRepository.deleteAll();
 		microphoneRepository.deleteAll();
 		frequencyBandRepository.deleteAll();
@@ -51,6 +61,7 @@ class SpectraratApplicationTests {
 	@AfterEach
 	void tearDown() {
 		// Clean the database after each test to ensure tests are independent
+		customerRepository.deleteAll();
 		receiverRepository.deleteAll();
 		microphoneRepository.deleteAll();
 		frequencyBandRepository.deleteAll();
@@ -67,7 +78,7 @@ class SpectraratApplicationTests {
 		mockMvc.perform(post("/api/frequency-bands")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(band)))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated()) // Expect 201 Created
 				.andExpect(jsonPath("$.id").exists()) // More robust check for the ID
 				.andExpect(jsonPath("$.bandName", is("G50")));
 	}
@@ -92,7 +103,7 @@ class SpectraratApplicationTests {
 		mockMvc.perform(post("/api/microphones")
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(mic)))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated()) // Expect 201 Created
 				.andExpect(jsonPath("$.id").exists()) 
 				.andExpect(jsonPath("$.manufacturer", is("Shure")));
 	}

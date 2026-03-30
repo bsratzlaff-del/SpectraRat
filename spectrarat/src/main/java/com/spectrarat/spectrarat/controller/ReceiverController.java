@@ -2,7 +2,6 @@ package com.spectrarat.spectrarat.controller;
 
 import com.spectrarat.spectrarat.model.Receiver;
 import com.spectrarat.spectrarat.repository.ReceiverRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,8 +10,11 @@ import java.util.List;
 @RequestMapping("/api/receivers")
 public class ReceiverController {
 
-    @Autowired
-    private ReceiverRepository receiverRepository;
+    private final ReceiverRepository receiverRepository;
+
+    public ReceiverController(ReceiverRepository receiverRepository) {
+        this.receiverRepository = receiverRepository;
+    }
 
     @GetMapping
     public List<Receiver> getAllReceivers() {

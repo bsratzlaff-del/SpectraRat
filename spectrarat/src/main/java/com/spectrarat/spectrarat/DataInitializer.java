@@ -3,30 +3,41 @@ package com.spectrarat.spectrarat;
 import java.util.List;
 
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spectrarat.spectrarat.model.Customer;
 import com.spectrarat.spectrarat.model.FrequencyBand;
 import com.spectrarat.spectrarat.model.Microphone;
 import com.spectrarat.spectrarat.model.Receiver;
+import com.spectrarat.spectrarat.repository.CustomerRepository;
 import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
 import com.spectrarat.spectrarat.repository.MicrophoneRepository;
 import com.spectrarat.spectrarat.repository.ReceiverRepository;
 
 @Component
+@Profile("dev") // Only run this initializer in the 'dev' profile
 public class DataInitializer implements CommandLineRunner {
 
     private final FrequencyBandRepository frequencyBandRepository;
     private final MicrophoneRepository microphoneRepository;
     private final ReceiverRepository receiverRepository;
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // Constructor Injection
     public DataInitializer(FrequencyBandRepository frequencyBandRepository,
                            MicrophoneRepository microphoneRepository,
-                           ReceiverRepository receiverRepository) {
+                           ReceiverRepository receiverRepository,
+                           CustomerRepository customerRepository,
+                           PasswordEncoder passwordEncoder) {
         this.frequencyBandRepository = frequencyBandRepository;
         this.microphoneRepository = microphoneRepository;
         this.receiverRepository = receiverRepository;
+        this.customerRepository = customerRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -40,6 +51,7 @@ public class DataInitializer implements CommandLineRunner {
             receiver.getAvailableFrequencyBands().clear();
             receiverRepository.save(receiver);
         }
+        customerRepository.deleteAll();
         receiverRepository.deleteAll();
         microphoneRepository.deleteAll();
         frequencyBandRepository.deleteAll();
@@ -167,5 +179,16 @@ public class DataInitializer implements CommandLineRunner {
 
         System.out.println("\nInitialized Receivers:");
         receiverRepository.findAll().forEach(System.out::println);
+
+        // 4. Add a sample customer
+        Customer customer = new Customer();
+        customer.setUsername("business_owner");
+        customer.setPassword(passwordEncoder.encode("password123")); // Always encode passwords!
+        customer.setEmail("owner@spectrarat.com");
+        customer.setBusinessName("SpectraRat Inc.");
+        customerRepository.save(customer);
+
+        System.out.println("\nInitialized Customers:");
+        customerRepository.findAll().forEach(c -> System.out.println("Customer: " + c.getUsername()));
     }
 }

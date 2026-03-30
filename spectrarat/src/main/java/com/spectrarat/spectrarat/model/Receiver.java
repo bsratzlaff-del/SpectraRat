@@ -4,29 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Table(name = "receivers")
-@Getter
-@Setter
-@ToString
+@ToString(exclude = {"compatibleMicrophones", "availableFrequencyBands"})
 @NoArgsConstructor
 public class Receiver extends WirelessDevice {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     private String receiverType;
 
@@ -77,5 +66,21 @@ public class Receiver extends WirelessDevice {
             return false; // Falls within restricted US bands
         }
         return true;
+    }
+
+    public String getReceiverType() {
+        return receiverType;
+    }
+
+    public void setReceiverType(String receiverType) {
+        this.receiverType = receiverType;
+    }
+
+    public List<Microphone> getCompatibleMicrophones() {
+        return compatibleMicrophones;
+    }
+
+    public List<FrequencyBand> getAvailableFrequencyBands() {
+        return availableFrequencyBands;
     }
 }

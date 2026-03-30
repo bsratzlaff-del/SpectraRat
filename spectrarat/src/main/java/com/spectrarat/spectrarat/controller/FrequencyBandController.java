@@ -2,7 +2,9 @@ package com.spectrarat.spectrarat.controller;
 
 import com.spectrarat.spectrarat.model.FrequencyBand;
 import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,8 +13,13 @@ import java.util.List;
 @RequestMapping("/api/frequency-bands")
 public class FrequencyBandController {
 
-    @Autowired
-    private FrequencyBandRepository frequencyBandRepository;
+    private final FrequencyBandRepository frequencyBandRepository;
+
+    public FrequencyBandController(FrequencyBandRepository frequencyBandRepository) {
+        this.frequencyBandRepository = frequencyBandRepository;
+    }
+    
+
 
     // Handles GET requests to /api/frequency-bands
     @GetMapping
@@ -22,7 +29,9 @@ public class FrequencyBandController {
 
     // Handles POST requests to /api/frequency-bands
     @PostMapping
-    public FrequencyBand createFrequencyBand(@RequestBody FrequencyBand frequencyBand) {
-        return frequencyBandRepository.save(frequencyBand);
+    public ResponseEntity<FrequencyBand> createFrequencyBand(@RequestBody FrequencyBand frequencyBand) {
+        
+        FrequencyBand savedBand = frequencyBandRepository.save(frequencyBand);
+        return new ResponseEntity<>(savedBand, HttpStatus.CREATED); 
     }
 }
