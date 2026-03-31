@@ -37,7 +37,7 @@ export class AppComponent implements OnInit { // 2. Implement OnInit
       },
       error: (err) => {
         console.error('Data fetch failed', err);
-        this.connectionMessage.set(`❌ Connection Error. Is Spring Boot on port 8081?`);
+        this.connectionMessage.set(`❌ Connection Error. Is Spring Boot on port 8082?`);
       }
     });
   }

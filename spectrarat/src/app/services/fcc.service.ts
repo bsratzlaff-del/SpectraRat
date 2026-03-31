@@ -11,7 +11,7 @@ export class FccService {
   private http = inject(HttpClient); 
   
   // Your backend address
-  private baseUrl = 'http://localhost:8081/api/fcc';
+  private baseUrl = 'http://localhost:8082/api/fcc';
 
   /**
    * Hits the /validate endpoint on your Spring Boot Controller.
