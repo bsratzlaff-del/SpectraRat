@@ -2,14 +2,16 @@ import { Component, signal, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FccService } from './services/fcc.service'; // Import your service
 import { FrequencyBand } from './models/frequency-band'; // Import the interface for FrequencyBand
+import { RecommendationComponent } from './recommendation/recommendation.component'; // Import the recommendation component
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, RecommendationComponent], 
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
+
 export class AppComponent implements OnInit { // 2. Implement OnInit
   protected readonly title = signal('spectrarat-ui');
   private fccService = inject(FccService);

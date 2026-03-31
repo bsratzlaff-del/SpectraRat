@@ -1,1 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
+@import "bootstrap/dist/css/bootstrap.min.css";
+@import "bootstrap-icons/font/bootstrap-icons.css";
+
+/* Custom status glow effects */
+.border-success { box-shadow: 0 0 10px rgba(40, 167, 69, 0.2); }
+.border-warning { box-shadow: 0 0 10px rgba(255, 193, 7, 0.2); }
+.border-danger  { box-shadow: 0 0 10px rgba(220, 53, 69, 0.2); }
+
+/* Make the percentage stand out */
+.match-percentage-text {
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: -1px;
+}
