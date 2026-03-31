@@ -42,8 +42,16 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        // Clear existing data (optional, useful for 'create' ddl-auto)
-        // Clear many-to-many relationships first
+        
+        // --- GUARD CLAUSE ---
+        // If we already have frequency bands in the database, skip the initialization!
+        if (frequencyBandRepository.count() > 0) {
+            System.out.println("Database is already seeded. Skipping DataInitializer.");
+            return; 
+        }
+        // --------------------
+
+        // Clear existing data (Only runs if somehow bands are 0 but other tables aren't)
         List<Receiver> allReceivers = receiverRepository.findAll();
         for (Receiver receiver : allReceivers) {
             receiver.getCompatibleMicrophones().clear();
@@ -182,7 +190,7 @@ public class DataInitializer implements CommandLineRunner {
         // 4. Add a sample customer
         Customer customer = new Customer();
         customer.setUsername("business_owner");
-        customer.setPassword(passwordEncoder.encode("password123")); // Always encode passwords!
+        customer.setPassword(passwordEncoder.encode("password123")); 
         customer.setEmail("owner@spectrarat.com");
         customer.setBusinessName("SpectraRat Inc.");
         customerRepository.save(customer);

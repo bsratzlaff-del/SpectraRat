@@ -19,6 +19,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/api/auth/**").permitAll() // Allow registration and login
                 .requestMatchers("/api/**").permitAll() // Keep other API endpoints open for now
+                .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated() // All other requests require authentication
             );
         return http.build();

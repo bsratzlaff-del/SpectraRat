@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,5 +40,21 @@ public class FccApiService {
                 .bodyToMono(String.class)
                 .map(response -> "API Connection Successful: " + response)
                 .onErrorResume(e -> Mono.just("API Connection Failed: " + e.getMessage()));
+    }
+    public List<FrequencyBand> getInhibitedBandsByZip(String zipCode) {
+        List<FrequencyBand> restricted = new ArrayList<>();
+        
+        // TODO: Future enhancement - query FCC database by zip code for active TV channels.
+        // For the capstone, we mock this logic to demonstrate the algorithm works.
+        
+        if ("90210".equals(zipCode)) {
+            // Mocking a restricted 600MHz Guard Band (Assuming your units are in MHz for mics)
+            restricted.add(new FrequencyBand(null, "Restricted 600MHz Guard Band", 600.0, 608.0)); 
+        } else if ("10001".equals(zipCode)) {
+            // Mocking heavy NYC DTV interference in the 500MHz range
+            restricted.add(new FrequencyBand(null, "NYC DTV Channel 22-24", 518.0, 536.0));
+        }
+        
+        return restricted;
     }
 }
