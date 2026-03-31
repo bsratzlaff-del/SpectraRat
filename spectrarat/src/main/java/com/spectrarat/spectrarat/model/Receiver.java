@@ -62,7 +62,7 @@ public class Receiver extends WirelessDevice {
 
     // Check if the receiver's frequency band is within legal limits
     public boolean checkLegalStatus() {
-        if (getFrequencyBand() != null && getFrequencyBand().getMaxFreq() > 614.0 && getFrequencyBand().getMinFreq() < 698.0) {
+        if (getFrequencyBand() != null && getFrequencyBand().getMaxFrequency() > 614.0 && getFrequencyBand().getMinFrequency() < 698.0) {
             return false; // Falls within restricted US bands
         }
         return true;
