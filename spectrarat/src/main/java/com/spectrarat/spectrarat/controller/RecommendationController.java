@@ -7,6 +7,11 @@ import com.spectrarat.spectrarat.service.FccApiService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -32,13 +37,77 @@ public class RecommendationController {
     public ResponseEntity<?> getTopThreeByLocation(
             @RequestParam String zipCode,
             @RequestParam Long receiverId) {
+        List<RecommendationResult> results = generateRecommendations(zipCode, receiverId);
+        if (results.isEmpty()) {
+            // Assuming generateRecommendations returns an empty list if receiver is not found.
+            return ResponseEntity.status(404).body("Receiver not found or no recommendations available.");
+        }
+        return ResponseEntity.ok(results);
+    }
+
+    @GetMapping("/report")
+    public void downloadReport(
+            @RequestParam String zipCode,
+            @RequestParam Long receiverId,
+            HttpServletResponse response) throws IOException {
+
+        // 1. Generate the data
+        List<RecommendationResult> results = generateRecommendations(zipCode, receiverId);
+
+        // 2. Set up HTTP response for CSV download
+        response.setContentType("text/csv");
+        String reportTitle = "Recommendation_Report_Zip_" + zipCode + "_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss")) + ".csv";
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + reportTitle + "\"");
+
+        // 3. Write CSV content
+        try (PrintWriter writer = response.getWriter()) {
+            // Report Title
+            writer.println("Recommendation Report for Zip Code: " + zipCode);
+            writer.println("Generated on: " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            writer.println(); // Blank line
+
+            // CSV Header (Multiple Columns)
+            writer.println("Model Name,Status,Match Percentage,Description,Timestamp");
+
+            // CSV Rows (Multiple Rows)
+            if (results.isEmpty()) {
+                writer.println("No recommendations found for the given criteria.");
+            } else {
+                for (RecommendationResult result : results) {
+                    writer.printf("\"%s\",\"%s\",%.1f,\"%s\",\"%s\"%n",
+                            escapeCsv(result.getModelName()),
+                            escapeCsv(result.getStatus()),
+                            result.getMatchPercentage(),
+                            escapeCsv(result.getDescription()),
+                            escapeCsv(result.getTimestamp()));
+                }
+            }
+        }
+    }
+
+    /**
+     * Helper to escape characters for CSV format.
+     */
+    private String escapeCsv(String data) {
+        if (data == null) {
+            return "";
+        }
+        // If the data contains a comma, quote, or newline, wrap it in double quotes.
+        if (data.contains(",") || data.contains("\"") || data.contains("\n")) {
+            // Escape existing double quotes by doubling them up.
+            return "\"" + data.replace("\"", "\"\"") + "\"";
+        }
+        return data;
+    }
+
+    private List<RecommendationResult> generateRecommendations(String zipCode, Long receiverId) {
 
         System.out.println("--- Starting Zip-Based Spectral Analysis for: " + zipCode + " ---");
 
         // 1. Find Receiver
         Optional<Receiver> receiverOpt = receiverRepo.findById(receiverId);
         if (receiverOpt.isEmpty()) {
-            return ResponseEntity.status(404).body("Receiver not found.");
+            return new ArrayList<>();
         }
         Receiver receiver = receiverOpt.get();
 
@@ -53,7 +122,7 @@ public class RecommendationController {
 
         // 3. Get FCC Data
         List<FrequencyBand> inhibited = fccApiService.getInhibitedBandsByZip(zipCode);
-        if (inhibited == null) inhibited = new ArrayList<>(); 
+        if (inhibited == null) inhibited = new ArrayList<>();
 
 
         // --- THE TRUTH LOGS ---
@@ -88,8 +157,8 @@ public class RecommendationController {
             double usableMhz = totalBandwidth - blockedBandwidth;
             double score = (usableMhz / totalBandwidth) * 100.0;
             score = Math.round(score * 10.0) / 10.0;
-
-            if (score < 50.0) score = 0.0; 
+            
+            if (score < 50.0) score = 0.0;
 
             String statusBadge;
             if (score >= 95) statusBadge = "EXCELLENT (Clear Spectrum)";
@@ -107,13 +176,12 @@ public class RecommendationController {
             ));
         }
 
-        // 6. Sort and Return (Limit commented out for Audit)
+        // 6. Sort and Return
         List<RecommendationResult> results = candidates.stream()
                 .sorted(Comparator.comparingDouble(RecommendationResult::getMatchPercentage).reversed())
-                //.limit(3)
                 .collect(Collectors.toList());
 
         System.out.println("Returning " + results.size() + " zip-ranked band recommendations.");
-        return ResponseEntity.ok(results);
+        return results;
     }
 }

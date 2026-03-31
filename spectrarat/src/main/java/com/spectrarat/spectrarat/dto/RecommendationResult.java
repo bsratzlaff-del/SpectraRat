@@ -1,10 +1,14 @@
 package com.spectrarat.spectrarat.dto;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 public class RecommendationResult {
     private String status;
     private double matchPercentage;
     private String modelName;
     private String description;
+    private String timestamp;
 
     public RecommendationResult() {}
 
@@ -13,6 +17,7 @@ public class RecommendationResult {
         this.matchPercentage = matchPercentage;
         this.modelName = modelName;
         this.description = description;
+        this.timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     public String getStatus() {
@@ -45,5 +50,13 @@ public class RecommendationResult {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
     }
 }
