@@ -42,19 +42,29 @@ public class FccApiService {
                 .onErrorResume(e -> Mono.just("API Connection Failed: " + e.getMessage()));
     }
     public List<FrequencyBand> getInhibitedBandsByZip(String zipCode) {
-        List<FrequencyBand> restricted = new ArrayList<>();
-        
-        // TODO: Future enhancement - query FCC database by zip code for active TV channels.
-        // For the capstone, we mock this logic to demonstrate the algorithm works.
-        
-        if ("90210".equals(zipCode)) {
-            // Mocking a restricted 600MHz Guard Band (Assuming your units are in MHz for mics)
-            restricted.add(new FrequencyBand(null, "Restricted 600MHz Guard Band", 600.0, 608.0)); 
-        } else if ("10001".equals(zipCode)) {
-            // Mocking heavy NYC DTV interference in the 500MHz range
-            restricted.add(new FrequencyBand(null, "NYC DTV Channel 22-24", 518.0, 536.0));
-        }
-        
-        return restricted;
+    List<FrequencyBand> restricted = new ArrayList<>();
+    
+    // Convert the zip code string to a number to use as a "Seed"
+    int zipSeed;
+    try {
+        zipSeed = Integer.parseInt(zipCode);
+    } catch (NumberFormatException e) {
+        zipSeed = 12345; // Default fallback
+    }
+
+
+    // Station 1: Based on the first two digits (Lower spectrum)
+    double start1 = 470.0 + (zipSeed % 10); 
+    restricted.add(new FrequencyBand(null, "TV Station Alpha", start1, start1 + 6.0));
+
+    // Station 2: Based on the middle digits (Mid spectrum)
+    double start2 = 510.0 + (zipSeed % 15);
+    restricted.add(new FrequencyBand(null, "TV Station Beta", start2, start2 + 6.0));
+
+    // Station 3: Based on the last digits (High spectrum)
+    double start3 = 560.0 + (zipSeed % 20);
+    restricted.add(new FrequencyBand(null, "TV Station Gamma", start3, start3 + 6.0));
+
+    return restricted;
     }
 }

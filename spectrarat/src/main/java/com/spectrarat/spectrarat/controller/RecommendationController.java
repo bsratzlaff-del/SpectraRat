@@ -42,11 +42,7 @@ public class RecommendationController {
         }
         Receiver receiver = receiverOpt.get();
 
-        // 2. Get FCC Data
-        List<FrequencyBand> inhibited = fccApiService.getInhibitedBandsByZip(zipCode);
-        if (inhibited == null) inhibited = new ArrayList<>();
-
-        // 3. Gather all possible bands for THIS specific receiver
+        // 2. Gather all possible bands for THIS specific receiver
         List<FrequencyBand> allRxBands = new ArrayList<>();
         if (receiver.getFrequencyBand() != null) {
             allRxBands.add(receiver.getFrequencyBand());
@@ -55,67 +51,69 @@ public class RecommendationController {
             allRxBands.addAll(receiver.getAvailableFrequencyBands());
         }
 
+        // 3. Get FCC Data
+        List<FrequencyBand> inhibited = fccApiService.getInhibitedBandsByZip(zipCode);
+        if (inhibited == null) inhibited = new ArrayList<>(); 
+
+
+        // --- THE TRUTH LOGS ---
+        System.out.println("DEBUG: Found " + inhibited.size() + " restricted bands for Zip " + zipCode);
+        for (FrequencyBand b : inhibited) {
+            System.out.println("    Restricted: " + b.getMinFrequency() + " - " + b.getMaxFrequency());
+        }
+        System.out.println("DEBUG: Testing Receiver with " + allRxBands.size() + " total hardware bands.");
+
         // 4. Format Compatible Capsules for the description
         String bundledMics = receiver.getCompatibleMicrophones().stream()
                 .map(Microphone::getModelName)
                 .collect(Collectors.joining(", "));
         String descriptionStr = "Compatible Capsules: " + (bundledMics.isEmpty() ? "None listed" : bundledMics);
 
-        // 5. Score and Rank each Frequency Band based on Zip Code RF Proximity
+        // 5. Spectral Density Ranking (Usable MHz / Total MHz)
         List<RecommendationResult> candidates = new ArrayList<>();
 
         for (FrequencyBand band : allRxBands) {
-            double score = 100.0;
-            double nearestInterference = Double.MAX_VALUE;
-            
+            double totalBandwidth = band.getMaxFrequency() - band.getMinFrequency();
+            double blockedBandwidth = 0.0;
+
             for (FrequencyBand restricted : inhibited) {
-                // ZERO TOLERANCE: If it overlaps OR TOUCHES an FCC restriction boundary, it's 0.0 instantly.
-                if (band.getMinFrequency() <= restricted.getMaxFrequency() && band.getMaxFrequency() >= restricted.getMinFrequency()) {
-                    score = 0.0; 
-                    break;
-                }
-                
-                // PROXIMITY RANKING: Calculate distance to the nearest illegal station
-                double distToBottomEdge = Math.abs(band.getMinFrequency() - restricted.getMaxFrequency());
-                double distToTopEdge = Math.abs(band.getMaxFrequency() - restricted.getMinFrequency());
-                double closestEdge = Math.min(distToBottomEdge, distToTopEdge);
-                
-                if (closestEdge < nearestInterference) {
-                    nearestInterference = closestEdge;
+                double overlapMin = Math.max(band.getMinFrequency(), restricted.getMinFrequency());
+                double overlapMax = Math.min(band.getMaxFrequency(), restricted.getMaxFrequency());
+
+                if (overlapMax > overlapMin) {
+                    blockedBandwidth += (overlapMax - overlapMin);
                 }
             }
 
-            // Apply a "Safety Buffer" penalty to create a true ranking among legal bands
-            if (score > 0 && nearestInterference != Double.MAX_VALUE) {
-                // If it's within 20MHz of interference, dock points proportional to closeness.
-                double proximityPenalty = Math.max(0, 15.0 - nearestInterference);
-                score -= proximityPenalty;
-                
-                // Round to 1 decimal place for clean JSON (e.g., 98.4)
-                score = Math.round(score * 10.0) / 10.0;
-            }
+            double usableMhz = totalBandwidth - blockedBandwidth;
+            double score = (usableMhz / totalBandwidth) * 100.0;
+            score = Math.round(score * 10.0) / 10.0;
 
-            // Assign status based on the final zip-based score
+            if (score < 50.0) score = 0.0; 
+
             String statusBadge;
-            if (score >= 90) statusBadge = "EXCELLENT MATCH";
-            else if (score > 0) statusBadge = "GOOD MATCH";
-            else statusBadge = "RESTRICTED (FCC OVERLAP)";
+            if (score >= 95) statusBadge = "EXCELLENT (Clear Spectrum)";
+            else if (score >= 80) statusBadge = "GOOD (Minor Interference)";
+            else if (score > 0) statusBadge = "POOR (Heavy TV Traffic)";
+            else statusBadge = "RESTRICTED (Insufficient Spectrum)";
+
+            String detailStr = String.format("%.1f MHz Usable | %s", usableMhz, descriptionStr);
 
             candidates.add(new RecommendationResult(
                     statusBadge,
                     score,
                     receiver.getManufacturer() + " " + receiver.getModelName() + " - Band " + band.getBandName(),
-                    descriptionStr
+                    detailStr
             ));
         }
 
-        // 6. Sort by highest score (Zip-based ranking) and limit to top 3
-        List<RecommendationResult> top3 = candidates.stream()
+        // 6. Sort and Return (Limit commented out for Audit)
+        List<RecommendationResult> results = candidates.stream()
                 .sorted(Comparator.comparingDouble(RecommendationResult::getMatchPercentage).reversed())
-                .limit(3)
+                //.limit(3)
                 .collect(Collectors.toList());
 
-        System.out.println("Returning " + top3.size() + " zip-ranked band recommendations.");
-        return ResponseEntity.ok(top3);
+        System.out.println("Returning " + results.size() + " zip-ranked band recommendations.");
+        return ResponseEntity.ok(results);
     }
 }
