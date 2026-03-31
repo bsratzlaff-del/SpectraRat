@@ -1,44 +1,55 @@
 package com.spectrarat.spectrarat.controller;
 
+import com.spectrarat.spectrarat.model.User; // Ensure you have a User model
+import com.spectrarat.spectrarat.repository.UserRepository; // Ensure you have a UserRepository
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.spectrarat.spectrarat.model.Customer;
-import com.spectrarat.spectrarat.repository.CustomerRepository;
+import java.util.Optional;
 
-
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private final CustomerRepository customerRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    public AuthController(CustomerRepository customerRepository, PasswordEncoder passwordEncoder) {
-        this.customerRepository = customerRepository;
-        this.passwordEncoder = passwordEncoder;
+    public AuthController(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<String> registerCustomer(@RequestBody Customer customer) {
-        // Check if username or email already exists
-        if (customerRepository.findByUsername(customer.getUsername()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username is already taken!");
+    // REGISTER endpoint
+    @PostMapping("/signup")
+    public ResponseEntity<?> registerUser(@RequestBody User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            return ResponseEntity.badRequest().body("Error: Username is already taken!");
         }
 
-        if (customerRepository.findByEmail(customer.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already in use!");
+        // In a production app, you MUST encode the password here 
+        // e.g., user.setPassword(passwordEncoder.encode(user.getPassword()));
+        
+        User savedUser = userRepository.save(user);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    }
+
+    // LOGIN endpoint
+    @PostMapping("/login")
+    public ResponseEntity<?> authenticateUser(@RequestBody User loginRequest) {
+        Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
+
+        if (user.isPresent() && user.get().getPassword().equals(loginRequest.getPassword())) {
+            // For Phase 3, you would typically generate and return a JWT token here.
+            // For now, we return the user object to confirm successful authentication.
+            return ResponseEntity.ok(user.get());
         }
 
-        // Encode the password before saving
-        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
-        customerRepository.save(customer);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid username or password");
+    }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Customer registered successfully!");
+    // LOGOUT endpoint (usually handled client-side by deleting the token)
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser() {
+        return ResponseEntity.ok("User logged out successfully");
     }
 }

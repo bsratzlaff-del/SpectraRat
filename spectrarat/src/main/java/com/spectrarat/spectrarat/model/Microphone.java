@@ -4,12 +4,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "microphones")
 @ToString
 @NoArgsConstructor
-// Inheritance: Microphone "is a" WirelessDevice
+@Getter
+@Setter
 public class Microphone extends WirelessDevice {
 
     private String capsuleType;

@@ -5,14 +5,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class FrequencyBand {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,11 +21,44 @@ public class FrequencyBand {
     private double maxFrequency;
 
     // Constructor for tests and convenience
+    public FrequencyBand() {}
+
+    public FrequencyBand(Long id, String bandName, double minFrequency, double maxFrequency) {
+        this.id = id;
+        this.bandName = bandName;
+        this.minFrequency = minFrequency;
+        this.maxFrequency = maxFrequency;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getBandName() {
+        return bandName;
+    }
+
+    public void setBandName(String bandName) {
+        this.bandName = bandName;
+    }
 
     public double getMinFrequency() {
         return minFrequency;
     }
+
+    public void setMinFrequency(double minFrequency) {
+        this.minFrequency = minFrequency;
+    }
+
     public double getMaxFrequency() {
         return maxFrequency;
+    }
+
+    public void setMaxFrequency(double maxFrequency) {
+        this.maxFrequency = maxFrequency;
     }
 }
