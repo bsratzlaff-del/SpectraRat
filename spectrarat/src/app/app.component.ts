@@ -1,34 +1,47 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { FccService } from './services/fcc.service'; // Import your service
-import { FrequencyBand } from './models/frequency-band'; // Import the interface for FrequencyBand
-import { RecommendationComponent } from './recommendation/recommendation.component'; // Import the recommendation component
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { CommonModule } from '@angular/common'; // <-- CRITICAL: Required for *ngIf
+import { FccService } from './services/fcc.service'; 
+import { FrequencyBand } from './models/frequency-band'; 
+import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive], 
+  // CRITICAL: CommonModule must be in this array!
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive], 
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
-
-export class AppComponent implements OnInit { // 2. Implement OnInit
+export class AppComponent implements OnInit { 
   protected readonly title = signal('spectrarat-ui');
+  
   private fccService = inject(FccService);
+  private router = inject(Router); 
   
   protected connectionMessage = signal<string>('Initializing system...');
   protected frequencyBands = signal<FrequencyBand[]>([]);
+  
+  // --- Authentication Tracker ---
+  isLoggedIn: boolean = false;
 
-  testConnection() {
-  this.refreshData(); // This just points the button to the new logic
-}
-
-  // 3. This runs automatically when the page loads
   ngOnInit() {
     this.refreshData();
+    this.checkLoginStatus(); // Check VIP pass on load
   }
 
-  // I moved the logic here so you can call it anytime (like after an update)
+  // Check if user data exists in local storage
+  checkLoginStatus() {
+    const sessionData = localStorage.getItem('currentUser');
+    this.isLoggedIn = !!sessionData; 
+  }
+
+  // --- CRITICAL: The Missing Logout Function ---
+  logout() {
+    localStorage.removeItem('currentUser');
+    this.isLoggedIn = false;
+    this.router.navigate(['/shop']);
+  }
+
   refreshData() {
     this.connectionMessage.set('Fetching frequency bands...');
     
