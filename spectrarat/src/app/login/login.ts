@@ -1,8 +1,8 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,28 +10,61 @@ import { Router } from '@angular/router';
   imports: [CommonModule, FormsModule],
   templateUrl: './login.html'
 })
-export class LoginComponent {
-  credentials = {
-    email: '',
-    password: ''
+export class LoginComponent implements OnInit {
+  // Toggles between Login form and Registration form
+  isRegisterMode = false;
+  
+  // Consolidated form data for both login and registration
+  formData = {
+    username: '',
+    password: '',
+    businessName: '',
+    address: '',
+    phone: '',
+    zipCode: ''
   };
+
   errorMessage: string = '';
 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  ngOnInit() {
+    // Listen for the ?mode=register query param from the Navbar "Sign Up" button
+    this.route.queryParams.subscribe(params => {
+      if (params['mode'] === 'register') {
+        this.isRegisterMode = true;
+      } else {
+        this.isRegisterMode = false;
+      }
+    });
+  }
+
+  toggleMode() {
+    this.isRegisterMode = !this.isRegisterMode;
+    this.errorMessage = ''; // Clear errors when switching
+  }
 
   onSubmit() {
-    this.http.post('http://localhost:8082/api/auth/login', this.credentials).subscribe({
+    const endpoint = this.isRegisterMode ? 'register' : 'login';
+    const payload = this.formData;
+
+    this.http.post(`http://localhost:8082/api/auth/${endpoint}`, payload).subscribe({
       next: (user: any) => {
-        // Save the verified user into the browser's memory
+        // Save user session
         localStorage.setItem('currentUser', JSON.stringify(user));
         
-        // Force a page redirect so the Navbar catches the update
+        // Redirect to dashboard
         window.location.href = '/dashboard'; 
       },
       error: (err) => {
-        this.errorMessage = 'Invalid email or password. Please try again.';
-        console.error('Login failed', err);
+        if (this.isRegisterMode) {
+          this.errorMessage = 'Registration failed. Username might be taken.';
+        } else {
+          this.errorMessage = 'Invalid username or password. Please try again.';
+        }
+        console.error(`${endpoint} failed`, err);
       }
     });
   }

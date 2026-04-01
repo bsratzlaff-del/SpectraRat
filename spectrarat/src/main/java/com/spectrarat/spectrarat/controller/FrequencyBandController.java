@@ -10,7 +10,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api/frequency-bands")
+@RequestMapping("/api/fcc") // BASE PATH
 public class FrequencyBandController {
 
     private final FrequencyBandRepository frequencyBandRepository;
@@ -19,43 +19,44 @@ public class FrequencyBandController {
         this.frequencyBandRepository = frequencyBandRepository;
     }
 
-    @GetMapping
+    // This matches: GET http://localhost:8082/api/fcc/bands
+    @GetMapping("/bands")
     public List<FrequencyBand> getAllFrequencyBands() {
         return frequencyBandRepository.findAll();
     }
 
-    // Added to help the frontend find bands for a specific hardware item
-    @GetMapping("/{id}")
+    // This matches: GET http://localhost:8082/api/fcc/validate
+    @GetMapping("/validate")
+    public String validateApiConnection() {
+        return "Connection successful!";
+    }
+
+    @GetMapping("/bands/{id}")
     public ResponseEntity<FrequencyBand> getFrequencyBandById(@PathVariable Long id) {
         return frequencyBandRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping
+    @PostMapping("/bands")
     public ResponseEntity<FrequencyBand> createFrequencyBand(@RequestBody FrequencyBand frequencyBand) {
-        // If you hit a Foreign Key constraint here, ensure the 'receiver' or 'microphone' 
-        // object inside the JSON payload has a valid ID.
         FrequencyBand savedBand = frequencyBandRepository.save(frequencyBand);
         return new ResponseEntity<>(savedBand, HttpStatus.CREATED);
     }
 
-    // Patch: Adding Update capability for Phase 3
-    @PutMapping("/{id}")
+    @PutMapping("/bands/{id}")
     public ResponseEntity<FrequencyBand> updateFrequencyBand(@PathVariable Long id, @RequestBody FrequencyBand bandDetails) {
         return frequencyBandRepository.findById(id)
                 .map(existingBand -> {
                     existingBand.setBandName(bandDetails.getBandName());
                     existingBand.setMinFrequency(bandDetails.getMinFrequency());
                     existingBand.setMaxFrequency(bandDetails.getMaxFrequency());
-                    // Update any hardware associations here if necessary
                     return ResponseEntity.ok(frequencyBandRepository.save(existingBand));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // Patch: Adding Delete for marketplace cleanup
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/bands/{id}")
     public ResponseEntity<Void> deleteFrequencyBand(@PathVariable Long id) {
         return frequencyBandRepository.findById(id)
                 .map(band -> {
