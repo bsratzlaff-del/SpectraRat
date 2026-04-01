@@ -10,7 +10,7 @@ import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("/api/fcc") // BASE PATH
+@RequestMapping("/api") // BASE PATH
 public class FrequencyBandController {
 
     private final FrequencyBandRepository frequencyBandRepository;
@@ -19,32 +19,31 @@ public class FrequencyBandController {
         this.frequencyBandRepository = frequencyBandRepository;
     }
 
-    // This matches: GET http://localhost:8082/api/fcc/bands
-    @GetMapping("/bands")
+    
+    @GetMapping("/frequency-bands")
     public List<FrequencyBand> getAllFrequencyBands() {
         return frequencyBandRepository.findAll();
     }
 
-    // This matches: GET http://localhost:8082/api/fcc/validate
     @GetMapping("/validate")
     public String validateApiConnection() {
         return "Connection successful!";
     }
 
-    @GetMapping("/bands/{id}")
+    @GetMapping("/frequency-bands/{id}")
     public ResponseEntity<FrequencyBand> getFrequencyBandById(@PathVariable Long id) {
         return frequencyBandRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/bands")
+    @PostMapping("/frequency-bands") // Changed from /bands
     public ResponseEntity<FrequencyBand> createFrequencyBand(@RequestBody FrequencyBand frequencyBand) {
         FrequencyBand savedBand = frequencyBandRepository.save(frequencyBand);
         return new ResponseEntity<>(savedBand, HttpStatus.CREATED);
     }
 
-    @PutMapping("/bands/{id}")
+    @PutMapping("/frequency-bands/{id}")
     public ResponseEntity<FrequencyBand> updateFrequencyBand(@PathVariable Long id, @RequestBody FrequencyBand bandDetails) {
         return frequencyBandRepository.findById(id)
                 .map(existingBand -> {
@@ -56,7 +55,7 @@ public class FrequencyBandController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/bands/{id}")
+    @DeleteMapping("/frequency-bands/{id}")
     public ResponseEntity<Void> deleteFrequencyBand(@PathVariable Long id) {
         return frequencyBandRepository.findById(id)
                 .map(band -> {

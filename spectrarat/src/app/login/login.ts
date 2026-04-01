@@ -50,6 +50,12 @@ export class LoginComponent implements OnInit {
     const endpoint = this.isRegisterMode ? 'register' : 'login';
     const payload = this.formData;
 
+    // Added structural validation to ensure required fields are present
+    if (!this.formData.username || !this.formData.password) {
+      this.errorMessage = 'Username and password are required.';
+      return;
+    }
+
     this.http.post(`http://localhost:8082/api/auth/${endpoint}`, payload).subscribe({
       next: (user: any) => {
         // Save user session
