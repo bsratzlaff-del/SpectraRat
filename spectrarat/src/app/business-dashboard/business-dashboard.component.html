@@ -1,65 +1,89 @@
 <div class="container mt-5">
   <div class="row">
     <div class="col-md-3">
-      <div class="list-group shadow-sm">
-        <button (click)="view = 'profile'" class="list-group-item list-group-item-action" [class.active]="view === 'profile'">
-          <i class="bi bi-person-gear me-2"></i> Business Profile
-        </button>
-        <button (click)="view = 'history'" class="list-group-item list-group-item-action" [class.active]="view === 'history'">
-          <i class="bi bi-clock-history me-2"></i> Purchase History
-        </button>
+      <div class="list-group">
+        <button class="list-group-item list-group-item-action" (click)="view = 'profile'" [class.active]="view === 'profile'">Edit Business Info</button>
+        <button class="list-group-item list-group-item-action" (click)="view = 'history'" [class.active]="view === 'history'">Purchase History</button>
       </div>
-      
-      <button (click)="generateReport()" class="btn btn-outline-primary w-100 mt-4 shadow-sm">
-        <i class="bi bi-file-earmark-pdf me-2"></i> Generate Business Report
-      </button>
     </div>
 
     <div class="col-md-9">
-      <div *ngIf="view === 'profile'" class="card shadow-sm border-0 p-4">
-        <h3>Edit Business Profile</h3>
-        <hr>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">Business Name</label>
-            <input type="text" [(ngModel)]="account.businessName" class="form-control" placeholder="Enter Business Name" title="Business Name">
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Contact Email</label>
-            <input type="email" [(ngModel)]="account.businessEmail" class="form-control" title="Contact Email">
-          </div>
-          <div class="col-12">
-            <label class="form-label">Street Address</label>
-            <input type="text" [(ngModel)]="account.streetAddress" class="form-control" title="Street Address">
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Zip Code</label>
-            <input type="text" [(ngModel)]="account.zipCode" class="form-control" placeholder="Primary Scanning Zone" title="Zip Code">
-          </div>
+      
+      <div *ngIf="view === 'profile'" class="card">
+        <div class="card-header">
+          <h3>Edit Business Information</h3>
         </div>
-        <button (click)="updateProfile()" class="btn btn-success mt-4 w-25">Save Changes</button>
+        <div class="card-body">
+          <form [formGroup]="editForm" (ngSubmit)="updateProfile()">
+            
+            <div class="form-group mb-3">
+              <label>Business Name</label>
+              <input type="text" class="form-control" formControlName="businessName" placeholder="Business Name">
+            </div>
+
+            <div class="form-group mb-3">
+              <label>Street Address</label>
+              <input type="text" class="form-control" formControlName="streetAddress" placeholder="123 Tech Lane">
+            </div>
+
+            <div class="row">
+              <div class="form-group col-md-5 mb-3">
+                <label>City</label>
+                <input type="text" class="form-control" formControlName="city" placeholder="Atlanta">
+              </div>
+              <div class="form-group col-md-3 mb-3">
+                <label>State</label>
+                <input type="text" class="form-control" formControlName="state" placeholder="GA">
+              </div>
+              <div class="form-group col-md-4 mb-3">
+                <label>Zip Code</label>
+                <input type="text" class="form-control" formControlName="zipCode" placeholder="30301">
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-success mt-3">Save Changes</button>
+          </form>
+        </div>
       </div>
 
-      <div *ngIf="view === 'history'" class="card shadow-sm border-0 p-4">
-        <h3>Hardware Deployment History</h3>
-        <table class="table table-hover mt-3">
-          <thead class="table-light">
-            <tr>
-              <th>Date</th>
-              <th>Hardware Model</th>
-              <th>Frequency Band</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of purchaseHistory">
-              <td>{{ item.purchaseDate }}</td>
-              <td>{{ item.receiverModel }}</td>
-              <td><span class="badge bg-secondary">{{ item.assignedBand }}</span></td>
-              <td><span class="text-success fw-bold">Deployed</span></td>
-            </tr>
-          </tbody>
-        </table>
+      <div *ngIf="view === 'history'" class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h3>Purchase History</h3>
+          <button class="btn btn-outline-primary btn-sm" (click)="generateReport()">Download Report</button>
+        </div>
+        <div class="card-body">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Receiver Model</th>
+                <th>Frequency Band</th>
+                <th>Purchase Date</th>
+                <th>Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="purchaseHistory.length === 0">
+                <td colspan="4" class="text-center text-muted">No records found in the SpectraRat database.</td>
+              </tr>
+
+              <tr *ngFor="let purchase of purchaseHistory">
+                <td>{{ purchase.receiverModel || 'N/A' }}</td>
+
+                <td>
+                  <span class="badge bg-info text-dark">
+                    {{ purchase.assignedBand || 'Unassigned' }}
+                  </span>
+                </td>
+
+                <td>{{ purchase.purchaseDate | date:'MMM d, y' }}</td>
+
+                <td class="text-end fw-bold">
+                  {{ (purchase.cost || 0) | currency }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

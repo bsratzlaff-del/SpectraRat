@@ -9,4 +9,5 @@ import java.util.List;
 public interface PurchaseRepository extends JpaRepository<PurchaseRecord, Long> {
     // This allows you to find all purchases made by a specific business
     List<PurchaseRecord> findByBusinessId(Long businessId);
+    
 }
