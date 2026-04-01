@@ -1,0 +1,38 @@
+/* 1. Make the cards feel like buttons */
+.clickable-card {
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 2px solid transparent;
+}
+
+/* 2. Add a subtle lift effect on hover */
+.clickable-card:hover {
+    transform: translateY(-3px);
+    border-color: #0d6efd; /* Bootstrap Primary Blue */
+    background-color: #f8f9fa;
+}
+
+/* 3. The "Selected" state (Activated by [ngClass] in your HTML) */
+.clickable-card.border-primary {
+    background-color: #e7f1ff !important;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+}
+
+/* 4. Smooth out the transitions for the "Spectra-Recommended" badge */
+.animate__fadeIn {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 5. Custom styling for the "Black" font weight in the match percentage */
+.fw-black {
+    font-weight: 900;
+}
+
+.ls-1 {
+    letter-spacing: 1px;
+}

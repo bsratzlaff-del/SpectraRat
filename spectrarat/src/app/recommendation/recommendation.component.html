@@ -64,6 +64,11 @@
                    [ngClass]="{'bg-success': res.matchPercentage >= 95, 'bg-warning': res.matchPercentage >= 80, 'bg-danger': res.matchPercentage < 80}"
                    [style.width.%]="res.matchPercentage"></div>
             </div>
+            <div class="d-grid">
+              <a [routerLink]="['/inventory', res.id]" class="btn btn-outline-primary fw-bold shadow-sm">
+                <i class="bi bi-gear-fill me-2"></i>Configure & Purchase
+              </a>
+            </div>
           </div>
         </div>
       </div>

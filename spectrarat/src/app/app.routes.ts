@@ -1,10 +1,14 @@
 import { Routes } from '@angular/router';
 import { RecommendationComponent } from './recommendation/recommendation.component';
 import { BusinessDashboardComponent } from './business-dashboard/business-dashboard.component';
+import { InventoryDetailComponent } from './inventory-detail/inventory-detail.component';
 // Assuming you named your registration component 'RegisterComponent'
 // import { RegisterComponent } from './register/register.component'; 
 
 export const routes: Routes = [
+  // Route for viewing the details of a specific inventory item
+  { path: 'inventory/:id', component: InventoryDetailComponent },
+
   // 1. The Main Analysis Tool
   { path: 'analyze', component: RecommendationComponent },
 

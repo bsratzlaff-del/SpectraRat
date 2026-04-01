@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';   // <--- ADD THIS
 import { RecommendationService } from '../services/recommendation.service';
 import { RecommendationResult } from '../models/recommendation-result.model';
 import { Receiver } from '../models/receiver.model';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-recommendation',
   standalone: true,
-  imports: [CommonModule, FormsModule], // MUST HAVE THESE TWO
+  imports: [CommonModule, FormsModule, RouterLink], // MUST HAVE THESE TWO
   templateUrl: './recommendation.component.html',
   styleUrls: ['./recommendation.component.css']
 })

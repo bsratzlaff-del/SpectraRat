@@ -1,0 +1,30 @@
+<div *ngIf="recommendedBand" class="card border-success bg-success-subtle mb-4 animate__animated animate__fadeIn">
+  <div class="card-body d-flex justify-content-between align-items-center">
+    <div>
+      <h5 class="text-success fw-bold mb-1">
+        <i class="bi bi-stars me-2"></i>Spectra Recommendation
+      </h5>
+      <p class="mb-0 text-dark">
+        Based on Zip <strong>{{zipCode}}</strong>, the <strong>{{recommendedBand.modelName}}</strong> band offers 
+        <span class="fw-bold">{{recommendedBand.matchPercentage}}%</span> clear spectrum.
+      </p>
+    </div>
+    <button type="button" (click)="applyRecommendation()" class="btn btn-success shadow-sm">
+      Use This Band
+    </button>
+  </div>
+</div>
+
+<div class="mt-5 border-top pt-4">
+  <div class="d-grid gap-2">
+    <button (click)="addToInventory()" 
+            [disabled]="!selectedBand" 
+            class="btn btn-primary btn-lg shadow fw-bold py-3">
+      <i class="bi bi-plus-circle me-2"></i> 
+      Add {{quantity}}x {{selectedReceiver.modelName}} to Business Inventory
+    </button>
+    <p *ngIf="!selectedBand" class="text-center text-danger small mt-2">
+      Please select or confirm a frequency band before adding to inventory.
+    </p>
+  </div>
+</div>
