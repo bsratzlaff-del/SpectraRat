@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common'; // <-- CRITICAL: Required for *n
 import { FccService } from './services/fcc.service'; 
 import { FrequencyBand } from './models/frequency-band'; 
 import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -15,8 +16,8 @@ import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/rou
 export class AppComponent implements OnInit { 
   protected readonly title = signal('spectrarat-ui');
   
-  private fccService = inject(FccService);
-  private router = inject(Router); 
+ private frequencyBandService = inject(FccService); 
+  private router = inject(Router);
   
   protected connectionMessage = signal<string>('Initializing system...');
   protected frequencyBands = signal<FrequencyBand[]>([]);
@@ -45,14 +46,15 @@ export class AppComponent implements OnInit {
   refreshData() {
     this.connectionMessage.set('Fetching frequency bands...');
     
-    this.fccService.getFccSpectrumBands().subscribe({
+    // Use the correctly named service variable here
+    this.frequencyBandService.getFrequencyBands().subscribe({ 
       next: (bands: FrequencyBand[]) => {
         this.frequencyBands.set(bands);
         this.connectionMessage.set(`✅ System Online: ${bands.length} bands loaded.`);
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         console.error('Data fetch failed', err);
-        this.connectionMessage.set(`❌ Connection Error. Is Spring Boot on port 8082?`);
+        this.connectionMessage.set(`❌ Error ${err.status}: ${err.message}. Is Spring Boot on port 8082?`);
       }
     });
   }

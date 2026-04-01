@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.Optional;
 
@@ -24,15 +25,15 @@ public class AuthController {
 
     // REGISTER endpoint
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@RequestBody Customer newCustomer) {
+    public ResponseEntity<?> registerUser(@Valid @RequestBody Customer customer) {
         // Simple check for username
-        if (customerRepository.findByUsername(newCustomer.getUsername()).isPresent()) {
+        if (customerRepository.findByUsername(customer.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Username is already taken!");
         }
         
         // Encode and save
-        newCustomer.setPassword(passwordEncoder.encode(newCustomer.getPassword()));
-        Customer savedCustomer = customerRepository.save(newCustomer);
+        customer.setPassword(passwordEncoder.encode(customer.getPassword()));
+        Customer savedCustomer = customerRepository.save(customer);
         savedCustomer.setPassword(null);
 
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);

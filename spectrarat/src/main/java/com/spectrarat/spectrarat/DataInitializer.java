@@ -17,7 +17,8 @@ import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
 import com.spectrarat.spectrarat.repository.MicrophoneRepository;
 import com.spectrarat.spectrarat.repository.ReceiverRepository;
 
-@Component // Only run this initializer in the 'dev' profile
+@Component
+@Profile("dev") // Only run this initializer in the 'dev' profile
 public class DataInitializer implements CommandLineRunner {
 
     private final FrequencyBandRepository frequencyBandRepository;

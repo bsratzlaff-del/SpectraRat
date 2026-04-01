@@ -2,7 +2,6 @@ package com.spectrarat.spectrarat.controller;
 
 import com.spectrarat.spectrarat.model.PurchaseRecord;
 import com.spectrarat.spectrarat.repository.PurchaseRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,8 +11,11 @@ import java.util.List;
 @RequestMapping("/api/purchases")
 public class PurchaseController {
 
-    @Autowired
-    private PurchaseRepository purchaseRepository;
+    private final PurchaseRepository purchaseRepository;
+
+    public PurchaseController(PurchaseRepository purchaseRepository) {
+        this.purchaseRepository = purchaseRepository;
+    }
 
     // This handles individual items (if you still use that)
     @PostMapping

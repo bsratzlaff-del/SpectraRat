@@ -10,37 +10,48 @@
         {{ errorMessage }}
       </div>
 
-      <form (ngSubmit)="onSubmit()">
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
         
         <div *ngIf="isRegisterMode">
           <div class="mb-3">
             <label class="form-label small fw-bold">Business Name</label>
-            <input type="text" class="form-control" [(ngModel)]="formData.businessName" name="businessName" required>
+            <<input id="businessName" type="text" class="form-control" formControlName="businessName" placeholder="Enter business name">
           </div>
           
           <div class="mb-3">
-            <label class="form-label small fw-bold">Phone Number</label>
-            <input type="text" class="form-control" [(ngModel)]="formData.phone" name="phone">
+            <label class="form-label small fw-bold">Email</label>
+            <input id="email" type="email" class="form-control" formControlName="email" placeholder="Enter email address">
           </div>
 
-          <div class="mb-3">
-            <label class="form-label small fw-bold">Address</label>
-            <input type="text" class="form-control" [(ngModel)]="formData.address" name="address">
+          <div class="form-group">
+            <input type="text" formControlName="streetAddress" placeholder="Street Address (e.g., 123 Tech Lane)">
+          </div>
+
+          <div class="row mb-3">
+            <div class="form-group">
+              <input type="text" formControlName="city" placeholder="City (e.g., Atlanta)">
+            </div>
+            <div class="form-group">
+              <input type="text" formControlName="state" placeholder="State (e.g., GA)">
+            </div>
+            <div class="form-group">
+              <input type="text" formControlName="zipCode" placeholder="Zip Code (e.g., 30301)">
+            </div>
           </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label small fw-bold">Username</label>
-          <input type="text" class="form-control" [(ngModel)]="formData.username" name="username" required>
+          <input id="username" type="text" class="form-control" formControlName="username" placeholder="Enter Username">
         </div>
 
         <div class="mb-4">
           <label class="form-label small fw-bold">Password</label>
-          <input type="password" class="form-control" [(ngModel)]="formData.password" name="password" required>
+          <input id="password" type="password" class="form-control" formControlName="password" placeholder="Enter Password">
         </div>
 
-        <button type="submit" class="btn btn-info w-100 fw-bold py-2 text-dark shadow-sm">
-          {{ isRegisterMode ? 'Register' : 'Login' }}
+        <button type="submit" class="btn btn-primary w-100 fw-bold" [disabled]="registerForm.invalid">
+          {{ isRegisterMode ? 'Register' : 'Sign In' }}
         </button>
       </form>
 

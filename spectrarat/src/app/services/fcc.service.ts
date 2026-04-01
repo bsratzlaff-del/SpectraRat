@@ -3,15 +3,13 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FrequencyBand } from '../models/frequency-band'; // Import the interface
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class FccService {
-  // Use the modern Angular 18 'inject' method
+  
   private http = inject(HttpClient); 
   
   // Your backend address
-  private baseUrl = 'http://localhost:8082/api/fcc';
+  private baseUrl = 'http://localhost:8082/api/frequency-bands';
 
   /**
    * Hits the /validate endpoint on your Spring Boot Controller.
@@ -25,7 +23,7 @@ export class FccService {
    * Hits the /bands endpoint.
    * Note: You'll eventually want to create a FrequencyBand interface for this!
    */
-  getFccSpectrumBands(): Observable<FrequencyBand[]> {
-  return this.http.get<FrequencyBand[]>(`${this.baseUrl}/bands`);
+  getFrequencyBands(): Observable<FrequencyBand[]> {
+  return this.http.get<FrequencyBand[]>(`http://localhost:8082/api/frequency-bands`);
 }
 }
