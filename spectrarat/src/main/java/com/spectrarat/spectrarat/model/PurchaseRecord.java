@@ -18,6 +18,6 @@ public class PurchaseRecord {
     private String capsuleType;
     private Integer quantity;
     private String assignedBand;
-    private Double totalPrice;
+    private Double cost;
     private LocalDate purchaseDate;
 }

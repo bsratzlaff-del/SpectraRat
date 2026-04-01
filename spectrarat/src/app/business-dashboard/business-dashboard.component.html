@@ -54,8 +54,8 @@
           <tbody>
             <tr *ngFor="let item of purchaseHistory">
               <td>{{ item.purchaseDate }}</td>
-              <td>{{ item.modelName }}</td>
-              <td><span class="badge bg-secondary">{{ item.bandName }}</span></td>
+              <td>{{ item.receiverModel }}</td>
+              <td><span class="badge bg-secondary">{{ item.assignedBand }}</span></td>
               <td><span class="text-success fw-bold">Deployed</span></td>
             </tr>
           </tbody>

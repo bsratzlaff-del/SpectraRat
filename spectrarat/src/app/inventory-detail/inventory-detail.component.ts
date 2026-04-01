@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,67 +13,119 @@ import { RecommendationService } from '../services/recommendation.service';
   styleUrls: ['./inventory-detail.component.css']
 })
 export class InventoryDetailComponent implements OnInit {
-  // --- 1. PROPERTY DECLARATIONS ---
   selectedReceiver: any = {};
-  selectedCapsule: string = 'SM58';
-  quantity: number = 1;
   zipCode: string = '';
+  quantity: number = 1;
+  isAutoFilled: boolean = false;
   selectedBand: string = '';
   analysisResults: any[] = [];
-  currentUser: any = null; 
+  capsules = [
+    { name: 'Shure SM58 (Industry Standard)', value: 'SM58', price: 0 },
+    { name: 'Shure Beta 58A (Supercardioid)', value: 'Beta58A', price: 150 },
+    { name: 'Shure KSM9 (Premium Condenser)', value: 'KSM9', price: 550 }
+  ];
+  selectedCapsule: string = 'SM58'; // Default to the first capsule
+  currentUser: any = null;
   recommendedBand: any = null;
-  loadingAnalysis: boolean = false;
 
-  // --- 2. SERVICE INJECTIONS ---
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private http = inject(HttpClient);
   private recommendationService = inject(RecommendationService);
 
   ngOnInit() {
-    // 1. Get the Hardware ID from the URL
     const id = this.route.snapshot.paramMap.get('id');
-    this.loadHardwareDetails(id);
-
-    // 2. AUTO-FILL LOGIC: Check if user is logged in and pull their ZIP
-    const sessionData = localStorage.getItem('currentUser');
-    if (sessionData) {
-      this.currentUser = JSON.parse(sessionData);
-      this.zipCode = this.currentUser.zipCode || '';
-      
-      // If we auto-filled the zip, run the analysis automatically for them!
-      if (this.zipCode) {
-        this.analyzeBands();
-      }
+    if (id) {
+      this.loadHardwareDetails(id);
     }
+    // Load the current user from local storage to associate the purchase
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   }
 
-  // --- 3. THE "SMART" SELECTION LOGIC ---
+  loadHardwareDetails(id: string) {
+    this.http.get<any>(`http://localhost:8082/api/receivers/${id}`).subscribe(receiver => {
+      this.selectedReceiver = receiver;
+    });
+  }
+
+  calculateTotal(): number {
+  console.log("=== STARTING MATH CHECK ===");
+  
+  // 1. Check what the receiver actually looks like
+  console.log("1. Receiver Data:", this.selectedReceiver);
+
+  // 2. Safely get the base price (Fallback to 1299 if DB is empty)
+  const basePrice = Number(this.selectedReceiver?.price) || 1299.00;
+  console.log("2. Base Price determined as:", basePrice);
+
+  // 3. Check the capsule
+  const premiums: { [key: string]: number } = {
+    'SM58': 0,
+    'Beta58A': 150.00,
+    'KSM9': 550.00
+  };
+  const capsulePremium = premiums[this.selectedCapsule] || 0;
+  console.log("3. Capsule Premium for " + this.selectedCapsule + ":", capsulePremium);
+
+  // 4. THE USUAL SUSPECT: Check the quantity
+  console.log("4. Raw Quantity from HTML:", this.quantity);
+  
+  // Force quantity to be a number, and if it's broken or 0, default to 1
+  const safeQuantity = Number(this.quantity) || 1; 
+
+  // 5. The Final Equation
+  const finalCost = (basePrice + capsulePremium) * safeQuantity;
+  console.log("5. FINAL MATH RESULT:", finalCost);
+  console.log("===========================");
+
+  return finalCost;
+}
+
+  addToCart() {
+    const calculatedCost = this.calculateTotal();
+  
+    console.log("BASE RECEIVER:", this.selectedReceiver.modelName);
+    console.log("SAVING COST AS:", calculatedCost);
+
+    if (!this.selectedBand) {
+      alert('Please select a frequency band before adding to cart.');
+      return;
+    }
+
+    const itemToStore = {
+    businessId: this.currentUser?.id,
+    receiverModel: `${this.selectedReceiver.manufacturer} ${this.selectedReceiver.modelName}`,
+    capsuleType: this.selectedCapsule,
+    quantity: this.quantity,
+    assignedBand: this.selectedBand,
+    // CRITICAL: Ensure this calls the function and assigns the number!
+    cost: this.calculateTotal(), 
+    purchaseDate: new Date().toISOString().split('T')[0]
+  };
+
+    const currentCart = JSON.parse(localStorage.getItem('spectraCart') || '[]');
+    currentCart.push(itemToStore);
+    localStorage.setItem('spectraCart', JSON.stringify(currentCart));
+  
+    this.router.navigate(['/cart']);
+}
+
+  // --- Analysis methods required for band selection ---
   analyzeBands() {
     if (!this.zipCode || !this.selectedReceiver.id) return;
-    
-    this.loadingAnalysis = true;
+
     this.recommendationService.getRecommendations(this.zipCode, this.selectedReceiver.id)
-      .subscribe({
-        next: (results) => {
-          const highestMatch = Math.max(...results.map((r: any) => r.matchPercentage));
-          
-          this.analysisResults = results.map((res: any) => ({
-            ...res,
-            isRecommended: res.matchPercentage === highestMatch 
-          }));
+      .subscribe((results: any[]) => {
+        const highestMatch = Math.max(...results.map(r => r.matchPercentage));
+        this.analysisResults = results.map(res => ({
+          ...res,
+          isRecommended: res.matchPercentage === highestMatch
+        }));
+        this.recommendedBand = this.analysisResults.find(r => r.isRecommended);
 
-          this.recommendedBand = this.analysisResults.find(r => r.isRecommended);
-
-          // Default the selection to the recommended band
-          if (this.recommendedBand) {
-            this.selectedBand = this.recommendedBand.modelName;
-          }
-          this.loadingAnalysis = false;
-        },
-        error: (err) => {
-          console.error('Spectrum analysis failed', err);
-          this.loadingAnalysis = false;
+        if (this.recommendedBand) {
+          this.selectedBand = this.recommendedBand.modelName;
+          this.isAutoFilled = true;
         }
       });
   }
@@ -81,55 +133,7 @@ export class InventoryDetailComponent implements OnInit {
   applyRecommendation() {
     if (this.recommendedBand) {
       this.selectedBand = this.recommendedBand.modelName;
+      this.isAutoFilled = true;
     }
-  }
-
-  // --- 4. THE PURCHASE & DATABASE WIRING ---
-  addToInventory() {
-    if (!this.selectedBand) {
-      alert('Please select a frequency band before purchasing.');
-      return;
-    }
-
-    // Creating the payload for your Spring Boot 'PurchaseRecord' entity
-    const purchaseData = {
-      businessId: this.currentUser?.id,
-      receiverModel: `${this.selectedReceiver.manufacturer} ${this.selectedReceiver.modelName}`,
-      capsuleType: this.selectedCapsule,
-      quantity: this.quantity,
-      assignedBand: this.selectedBand,
-      totalPrice: this.calculateTotal(),
-      purchaseDate: new Date().toISOString().split('T')[0] // Formats as YYYY-MM-DD
-    };
-
-    // Replace with your actual Spring Boot API URL
-    this.http.post('http://localhost:8082/api/purchases', purchaseData).subscribe({
-      next: () => {
-        alert('System successfully added to your inventory!');
-        this.router.navigate(['/dashboard']); 
-      },
-      error: (err) => {
-        console.error('Failed to save purchase', err);
-        alert('Checkout failed. Please ensure the backend server is running.');
-      }
-    });
-  }
-
-  loadHardwareDetails(id: string | null) {
-    if (!id) return;
-    // Calling your specific receiver endpoint
-    this.http.get<any>(`http://localhost:8082/api/receivers/${id}`).subscribe(data => {
-      this.selectedReceiver = data;
-    });
-  }
-
-  calculateTotal(): number {
-    const basePrice = 1299.00;
-    const premiums: { [key: string]: number } = {
-      'SM58': 0,
-      'Beta58A': 150.00,
-      'KSM9': 550.00
-    };
-    return (basePrice + (premiums[this.selectedCapsule] || 0)) * this.quantity;
   }
 }

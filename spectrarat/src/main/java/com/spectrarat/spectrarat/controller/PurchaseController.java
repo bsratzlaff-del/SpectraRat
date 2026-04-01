@@ -7,18 +7,24 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:4200")
 @RestController
 @RequestMapping("/api/purchases")
-@CrossOrigin(origins = "http://localhost:4200") // <--- CRITICAL: Allows Angular to talk to Java
 public class PurchaseController {
 
     @Autowired
     private PurchaseRepository purchaseRepository;
 
+    // This handles individual items (if you still use that)
     @PostMapping
     public PurchaseRecord createPurchase(@RequestBody PurchaseRecord purchase) {
-        // This saves the "Cart" data directly to your PostgreSQL/MySQL database
         return purchaseRepository.save(purchase);
+    }
+
+    // THIS FIXES THE 404: It adds the /batch door
+    @PostMapping("/batch")
+    public List<PurchaseRecord> createPurchases(@RequestBody List<PurchaseRecord> purchases) {
+        return purchaseRepository.saveAll(purchases);
     }
 
     @GetMapping("/business/{id}")

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-business-dashboard',
@@ -16,8 +17,17 @@ export class BusinessDashboardComponent implements OnInit {
   // RENAME THIS from 'history' to 'purchaseHistory' to avoid browser conflicts
   purchaseHistory: any[] = []; 
 
+  private http = inject(HttpClient);
+
   ngOnInit() {
-    // Load your data here
+    const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    if (user.id) {
+      // Fetch the REAL history from your Java API
+      this.http.get<any[]>(`http://localhost:8082/api/purchases/business/${user.id}`)
+        .subscribe(data => {
+          this.purchaseHistory = data; // This fills your table!
+        });
+    }
   }
 
   updateProfile() {
@@ -31,7 +41,7 @@ export class BusinessDashboardComponent implements OnInit {
         <body>
           <h1>Business Report: ${this.account.businessName}</h1>
           <ul>
-            ${this.purchaseHistory.map(h => `<li>${h.purchaseDate}: ${h.modelName}</li>`).join('')}
+            ${this.purchaseHistory.map(h => `<li>${h.purchaseDate}: ${h.receiverModel}</li>`).join('')}
           </ul>
         </body>
       </html>

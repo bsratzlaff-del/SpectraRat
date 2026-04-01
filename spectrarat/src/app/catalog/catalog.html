@@ -23,7 +23,7 @@
           </div>
           <h4 class="card-title fw-bold text-dark mb-1">{{rx.manufacturer}}</h4>
           <h5 class="text-secondary mb-3">{{rx.modelName}}</h5>
-          <p class="text-dark fw-semibold h5 mb-4">$1,299.00</p>
+          <p class="text-dark fw-semibold h5 mb-4">{{rx.price | currency:'USD'}}</p>
           
           <a [routerLink]="['/inventory', rx.id]" class="btn btn-dark w-100 py-2 fw-bold shadow-sm">
             <i class="bi bi-sliders2 me-2"></i>Configure System

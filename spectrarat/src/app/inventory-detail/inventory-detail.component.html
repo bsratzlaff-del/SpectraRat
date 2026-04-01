@@ -14,9 +14,9 @@
         <div class="mb-4">
           <label for="microphoneCapsule" class="form-label fw-semibold">Select Microphone Capsule</label>
           <select id="microphoneCapsule" [(ngModel)]="selectedCapsule" class="form-select form-select-lg border-2">
-            <option value="SM58">Shure SM58 (Industry Standard) - +$0</option>
-            <option value="Beta58A">Shure Beta 58A (Supercardioid) - +$150</option>
-            <option value="KSM9">Shure KSM9 (Premium Condenser) - +$550</option>
+            <option *ngFor="let capsule of capsules" [value]="capsule.value">
+              {{capsule.name}} - +${{capsule.price}}
+            </option>
           </select>
           <div class="form-text">Choose the capsule that best fits your vocal application.</div>
         </div>
@@ -71,8 +71,8 @@
           </select>
         </div>
 
-        <button (click)="addToInventory()" ...>
-            Purchase System - ${{ calculateTotal() | number:'1.2-2' }}
+        <button (click)="addToCart()" class="btn btn-primary w-100 py-3 fw-bold" [disabled]="!selectedBand">
+            Add to Cart - ${{ calculateTotal() | number:'1.2-2' }}
         </button>
         
         <p *ngIf="!selectedBand" class="text-danger small text-center mt-3">
