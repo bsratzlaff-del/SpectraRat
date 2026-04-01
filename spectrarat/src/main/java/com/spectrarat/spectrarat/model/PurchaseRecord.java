@@ -1,19 +1,23 @@
 package com.spectrarat.spectrarat.model;
 
 import jakarta.persistence.*;
-import java.time.LocalDate;     
-import lombok.Data;            
+import lombok.Data;
+import java.time.LocalDate;
 
 @Entity
-@Data
+@Table(name = "purchase_records")
+@Data // Generates getters/setters automatically
 public class PurchaseRecord {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
+
     private Long businessId;
-    private String modelName;
-    private String bandName;
-    private Double price;
+    private String receiverModel;
+    private String capsuleType;
+    private Integer quantity;
+    private String assignedBand;
+    private Double totalPrice;
     private LocalDate purchaseDate;
 }
