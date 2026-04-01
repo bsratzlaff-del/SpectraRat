@@ -15,8 +15,8 @@
           <input type="text" [(ngModel)]="zipCode" class="form-control form-control-lg border-2" placeholder="e.g. 60601">
         </div>
         <div class="col-md-5">
-          <label class="form-label fw-semibold">Receiver Unit</label>
-          <select [(ngModel)]="selectedReceiverId" class="form-select form-select-lg border-2">
+          <label for="receiverSelect" class="form-label fw-semibold">Receiver Unit</label>
+          <select id="receiverSelect" [(ngModel)]="selectedReceiverId" class="form-select form-select-lg border-2">
             <option *ngFor="let rx of receivers" [value]="rx.id">
               {{ rx.manufacturer }} {{ rx.modelName }}
             </option>
@@ -59,7 +59,7 @@
             <h5 class="card-title fw-bold mb-1">{{ res.modelName }}</h5>
             <p class="text-muted small mb-3">{{ res.description }}</p>
             
-            <div class="progress" style="height: 6px;">
+            <div class="progress progress-custom">
               <div class="progress-bar" 
                    [ngClass]="{'bg-success': res.matchPercentage >= 95, 'bg-warning': res.matchPercentage >= 80, 'bg-danger': res.matchPercentage < 80}"
                    [style.width.%]="res.matchPercentage"></div>

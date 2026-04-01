@@ -29,10 +29,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Error: Username is already taken!");
         }
 
-        // For simplicity, store plain password (not recommended for production)
-        String plainPassword = user.getPassword();
-        user.setPassword(plainPassword);
-        System.out.println("Registering user: " + user.getUsername() + " with password: " + plainPassword);
+        // Encode the password before saving
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        System.out.println("Registering user: " + user.getUsername());
         User savedUser = userRepository.save(user);
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
@@ -42,7 +41,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@RequestBody User loginRequest) {
         Optional<User> user = userRepository.findByUsername(loginRequest.getUsername());
 
-        if (user.isPresent() && loginRequest.getPassword().equals(user.get().getPassword())) {
+        if (user.isPresent() && passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
             System.out.println("Login successful for user: " + loginRequest.getUsername());
             // For Phase 3, you would typically generate and return a JWT token here.
             // For now, we return the user object to confirm successful authentication.

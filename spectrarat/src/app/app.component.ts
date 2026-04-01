@@ -1,13 +1,13 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
 import { FccService } from './services/fcc.service'; // Import your service
 import { FrequencyBand } from './models/frequency-band'; // Import the interface for FrequencyBand
 import { RecommendationComponent } from './recommendation/recommendation.component'; // Import the recommendation component
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RecommendationComponent], 
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, RecommendationComponent], 
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
