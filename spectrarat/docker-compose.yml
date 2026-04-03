@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  # 1. The Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: spectrarat-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123 # Change to match your properties file!
+      POSTGRES_DB: spectrarat
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # 2. The Spring Boot Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: spectrarat-backend
+    ports:
+      - "8082:8082"
+    environment:
+      # This overrides your application.properties URL to point to the 'postgres' container instead of localhost!
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/spectrarat
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password123
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      - postgres
+
+  # 3. The Angular Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: spectrarat-frontend
+    ports:
+      - "4200:80" # Maps your laptop's 4200 to the container's 80
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data: # Keeps your database data persistent between restarts!
