@@ -38,7 +38,7 @@ services:
       dockerfile: Dockerfile
     container_name: spectrarat-frontend
     ports:
-      - "4200:80" # Maps your laptop's 4200 to the container's 80
+      - "80:80" # Maps your laptop's 4200 to the container's 80
     depends_on:
       - backend
 

@@ -1,19 +1,25 @@
 package com.spectrarat.spectrarat.controller;
 
-import com.spectrarat.spectrarat.dto.RecommendationResult;
-import com.spectrarat.spectrarat.service.RecommendationService;
-import com.spectrarat.spectrarat.util.CsvUtil;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:4200")
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.spectrarat.spectrarat.dto.RecommendationResult;
+import com.spectrarat.spectrarat.service.RecommendationService;
+import com.spectrarat.spectrarat.util.CsvUtil;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/recommendations")
 public class RecommendationController {
