@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+// 1. ADD THIS IMPORT (Adjust the path if your folders are different)
+import { environment } from 'src/environments/environment'; 
+
 import { RecommendationResult } from '../models/recommendation-result.model';
 import { Receiver } from '../models/receiver.model';
 
@@ -8,16 +11,15 @@ import { Receiver } from '../models/receiver.model';
   providedIn: 'root'
 })
 export class RecommendationService {
-  private baseUrl = 'http://localhost:8082/api';
+  // 2. CHANGE THIS LINE: No quotes, no backticks needed if just using the variable
+  private baseUrl = environment.apiUrl; 
 
   constructor(private http: HttpClient) { }
 
-  // Fetches the list of receivers for the dropdown
   getReceivers(): Observable<Receiver[]> {
     return this.http.get<Receiver[]>(`${this.baseUrl}/receivers`);
   }
 
-  // Runs the Spectral Analysis algorithm
   getRecommendations(zipCode: string, receiverId: number): Observable<RecommendationResult[]> {
     const params = new HttpParams()
       .set('zipCode', zipCode)

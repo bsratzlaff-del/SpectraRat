@@ -2,6 +2,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms'; 
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-business-dashboard',
@@ -51,7 +52,7 @@ export class BusinessDashboardComponent implements OnInit {
   }
 
   fetchPurchaseHistory(username: string) {
-    this.http.get<any[]>(`http://localhost:8082/api/purchases/user/${username}`).subscribe({
+   this.http.get<any[]>(`${environment.apiUrl}/purchases/user/${username}`).subscribe({
       next: (data) => {
         this.purchaseHistory = data;
         console.log("Raw Purchase Data:", data);
