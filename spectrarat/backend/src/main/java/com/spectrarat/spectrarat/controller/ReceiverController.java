@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.spectrarat.spectrarat.model.Receiver;
 import com.spectrarat.spectrarat.repository.ReceiverRepository;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://158.23.58.74")
 @RestController
 @RequestMapping("/api/receivers")
 public class ReceiverController {
