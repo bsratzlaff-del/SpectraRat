@@ -26,12 +26,14 @@ public class SecurityConfig {
             // 1. Disable CSRF (Required for Angular POST requests)
             .csrf(csrf -> csrf.disable())
             
-            // 2. Configure CORS explicitly
+            // 2. Configure CORS explicitly (FIXED PATTERN HERE)
             .cors(cors -> cors.configurationSource(request -> {
                 CorsConfiguration config = new CorsConfiguration();
-                config.setAllowedOrigins(List.of("*"));
+                config.setAllowedOriginPatterns(List.of("*")); // <--- THE MAGIC FIX
                 config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                 config.setAllowedHeaders(List.of("*"));
+                // If you are using cookies/auth tokens, uncomment the line below:
+                // config.setAllowCredentials(true); 
                 return config;
             }))
 
