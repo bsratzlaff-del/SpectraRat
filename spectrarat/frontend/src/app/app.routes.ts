@@ -5,8 +5,6 @@ import { InventoryDetailComponent } from './inventory-detail/inventory-detail.co
 import { CatalogComponent } from './catalog/catalog';
 import { CartComponent } from './cart/cart';
 import { LoginComponent } from './login/login';
-// Assuming you named your registration component 'RegisterComponent'
-// import { RegisterComponent } from './register/register.component'; 
 
 export const routes: Routes = [
   { path: '', redirectTo: '/shop', pathMatch: 'full' },

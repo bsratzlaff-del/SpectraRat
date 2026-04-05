@@ -19,10 +19,6 @@ export class FccService {
     return this.http.get(`${this.baseUrl}/validate`, { responseType: 'text' });
   }
 
-  /**
-   * Hits the /bands endpoint.
-   * Note: You'll eventually want to create a FrequencyBand interface for this!
-   */
   getFrequencyBands(): Observable<FrequencyBand[]> {
   return this.http.get<FrequencyBand[]>(this.baseUrl);
 }
