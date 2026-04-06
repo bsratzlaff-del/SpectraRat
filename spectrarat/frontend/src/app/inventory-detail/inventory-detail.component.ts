@@ -20,7 +20,6 @@ export class InventoryDetailComponent implements OnInit {
   quantity: number = 1;
   isAutoFilled: boolean = false;
   
-  // Notice this is exactly what we will bind to in the HTML now!
   selectedBand: string = ''; 
   
   analysisResults: any[] = [];
@@ -46,15 +45,6 @@ export class InventoryDetailComponent implements OnInit {
       this.loadHardwareDetails(id);
     }
     this.currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-
-    // Cleaned up: Just ONE call to the FCC Service
-    this.fccService.getFrequencyBands().subscribe({
-      next: (bands) => {
-        console.log('✅ Bands successfully received from Azure:', bands);
-        this.frequencyBands.set(bands);
-      },
-      error: (err) => console.error('❌ Failed to load frequency bands', err)
-    });
   }
 
   loadHardwareDetails(id: string) {
@@ -94,8 +84,23 @@ export class InventoryDetailComponent implements OnInit {
   }
 
   analyzeBands() {
-    if (!this.zipCode || !this.selectedReceiver.id) return;
+    if (!this.zipCode || !this.selectedReceiver?.id) return;
 
     this.recommendationService.getRecommendations(this.zipCode, this.selectedReceiver.id)
       .subscribe((results: any[]) => {
-        const highestMatch = Math.
+        if (results && results.length > 0) {
+          // FIXED: Safely finds the band with the highest match percentage
+          this.recommendedBand = results.reduce((prev, current) => 
+            (prev.matchPercentage > current.matchPercentage) ? prev : current
+          );
+        }
+      });
+  }
+
+  // ADDED: This function matches the Apply button in your HTML!
+  applyRecommendation() {
+    if (this.recommendedBand) {
+      this.selectedBand = this.recommendedBand.modelName || this.recommendedBand.bandName;
+    }
+  }
+}
