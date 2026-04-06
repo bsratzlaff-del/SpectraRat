@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 
 import { RecommendationResult } from '../models/recommendation-result.model';
 import { Receiver } from '../models/receiver.model';
+import { ReceiverService } from './receiver.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,11 +14,11 @@ import { Receiver } from '../models/receiver.model';
 export class RecommendationService {
   
   private baseUrl = environment.apiUrl; 
-
-  constructor(private http: HttpClient) { }
+  private http = inject(HttpClient);
+  private receiverService = inject(ReceiverService);
 
   getReceivers(): Observable<Receiver[]> {
-    return this.http.get<Receiver[]>(`${this.baseUrl}/receivers`);
+    return this.receiverService.getReceivers();
   }
 
   getRecommendations(zipCode: string, receiverId: number): Observable<RecommendationResult[]> {
