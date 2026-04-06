@@ -19,7 +19,7 @@ import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/api") // BASE PATH
+@RequestMapping("/api/frequency-bands") // BASE PATH
 public class FrequencyBandController {
 
     private final FrequencyBandRepository frequencyBandRepository;
@@ -29,7 +29,7 @@ public class FrequencyBandController {
     }
 
     
-    @GetMapping("/frequency-bands")
+    @GetMapping
     public List<FrequencyBand> getAllFrequencyBands() {
         return frequencyBandRepository.findAll();
     }
