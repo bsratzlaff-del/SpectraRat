@@ -24,8 +24,8 @@ public class SpectraratApplication {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/api/**") // Applies to any endpoint starting with /api/
-                        .allowedOrigins("http://158.23.58.74:4200") // The Angular dev server
+                registry.addMapping("/**")
+                        .allowedOriginPatterns("*") // Use this instead of allowedOrigins("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .allowCredentials(true);
