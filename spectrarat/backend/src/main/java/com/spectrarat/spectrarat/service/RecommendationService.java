@@ -1,19 +1,20 @@
 package com.spectrarat.spectrarat.service;
 
-import com.spectrarat.spectrarat.dto.RecommendationResult;
-import com.spectrarat.spectrarat.model.FrequencyBand;
-import com.spectrarat.spectrarat.model.Microphone;
-import com.spectrarat.spectrarat.model.Receiver;
-import com.spectrarat.spectrarat.repository.ReceiverRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+
+import com.spectrarat.spectrarat.dto.RecommendationResult;
+import com.spectrarat.spectrarat.model.FrequencyBand;
+import com.spectrarat.spectrarat.model.Microphone;
+import com.spectrarat.spectrarat.model.Receiver;
+import com.spectrarat.spectrarat.repository.ReceiverRepository;
 
 @Service
 public class RecommendationService {
@@ -37,6 +38,7 @@ public class RecommendationService {
         }
         Receiver receiver = receiverOpt.get();
 
+        // 1. Gather all potential hardware bands (Null Safe)
         List<FrequencyBand> allRxBands = new ArrayList<>();
         if (receiver.getFrequencyBand() != null) {
             allRxBands.add(receiver.getFrequencyBand());
@@ -45,19 +47,21 @@ public class RecommendationService {
             allRxBands.addAll(receiver.getAvailableFrequencyBands());
         }
 
+        // 2. Get restricted bands from FCC API
         List<FrequencyBand> inhibited = fccApiService.getInhibitedBandsByZip(zipCode);
         if (inhibited == null) {
             inhibited = new ArrayList<>();
         }
 
-        log.debug("Found {} restricted bands for Zip {}", inhibited.size(), zipCode);
-        inhibited.forEach(b -> log.debug("    Restricted: {} - {}", b.getMinFrequency(), b.getMaxFrequency()));
-        log.debug("Testing Receiver with {} total hardware bands.", allRxBands.size());
-
-        String bundledMics = receiver.getCompatibleMicrophones().stream()
-                .map(Microphone::getModelName)
-                .collect(Collectors.joining(", "));
-        String descriptionStr = "Compatible Capsules: " + (bundledMics.isEmpty() ? "None listed" : bundledMics);
+        // 3. Null-Safe check for Compatible Microphones
+        String bundledMics = "None listed";
+        if (receiver.getCompatibleMicrophones() != null && !receiver.getCompatibleMicrophones().isEmpty()) {
+            bundledMics = receiver.getCompatibleMicrophones().stream()
+                    .map(Microphone::getModelName)
+                    .collect(Collectors.joining(", "));
+        }
+        
+        String descriptionStr = "Compatible Capsules: " + bundledMics;
 
         List<RecommendationResult> candidates = new ArrayList<>();
         for (FrequencyBand band : allRxBands) {
