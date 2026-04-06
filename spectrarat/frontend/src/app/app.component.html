@@ -1,3 +1,12 @@
+<div class="container mt-2">
+  <select class="form-select w-25" aria-label="Frequency Bands">
+    <option selected disabled>Select a Frequency Band...</option>
+    <option *ngFor="let band of frequencyBands()" [value]="band.id">
+      {{ band.bandName }} ({{ band.minFrequency }} - {{ band.maxFrequency }} MHz)
+    </option>
+  </select>
+</div>
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow">
   <div class="container">
     
