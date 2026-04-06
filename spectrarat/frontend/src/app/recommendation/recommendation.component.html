@@ -8,13 +8,28 @@
     <div class="card-header bg-dark text-white p-3">
       <h5 class="mb-0 px-2"><i class="bi bi-broadcast me-2"></i>Analysis Configuration</h5>
     </div>
+    
     <div class="card-body p-4 bg-light">
       <div class="row g-4 align-items-end">
-        <div class="col-md-4">
+        
+        <div class="col-md-3">
           <label class="form-label fw-semibold">Local Zip Code</label>
           <input type="text" [(ngModel)]="zipCode" class="form-control form-control-lg border-2" placeholder="e.g. 60601">
         </div>
-        <div class="col-md-5">
+
+        <div class="col-md-3">
+          <label for="bandSelect" class="form-label fw-semibold">Confirmed Band</label>
+          <select id="bandSelect" class="form-select form-select-lg border-2" [(ngModel)]="selectedBandId">
+            <option value="" selected disabled>Choose Band...</option>
+            @for (band of frequencyBands(); track band.id) {
+              <option [value]="band.id">
+                {{ band.bandName }}
+              </option>
+            }
+          </select>
+        </div>
+
+        <div class="col-md-3">
           <label for="receiverSelect" class="form-label fw-semibold">Receiver Unit</label>
           <select id="receiverSelect" [(ngModel)]="selectedReceiverId" class="form-select form-select-lg border-2">
             <option *ngFor="let rx of receivers" [value]="rx.id">
@@ -22,12 +37,14 @@
             </option>
           </select>
         </div>
+
         <div class="col-md-3">
           <button (click)="analyzeSpectrum()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" [disabled]="loading">
             <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
             {{ loading ? 'ANALYZING...' : 'RUN ANALYSIS' }}
           </button>
         </div>
+
       </div>
     </div>
   </div>
@@ -59,11 +76,12 @@
             <h5 class="card-title fw-bold mb-1">{{ res.modelName }}</h5>
             <p class="text-muted small mb-3">{{ res.description }}</p>
             
-            <div class="progress progress-custom">
+            <div class="progress progress-custom mb-3">
               <div class="progress-bar" 
                    [ngClass]="{'bg-success': res.matchPercentage >= 95, 'bg-warning': res.matchPercentage >= 80, 'bg-danger': res.matchPercentage < 80}"
                    [style.width.%]="res.matchPercentage"></div>
             </div>
+
             <div class="d-grid">
               <a [routerLink]="['/inventory', res.id]" class="btn btn-outline-primary fw-bold shadow-sm">
                 <i class="bi bi-gear-fill me-2"></i>Configure & Purchase
