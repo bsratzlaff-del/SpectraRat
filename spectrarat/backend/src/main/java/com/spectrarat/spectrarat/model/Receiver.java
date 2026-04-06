@@ -3,6 +3,8 @@ package com.spectrarat.spectrarat.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -25,7 +27,9 @@ public class Receiver extends WirelessDevice {
         joinColumns = @JoinColumn(name = "receiver_id"),
         inverseJoinColumns = @JoinColumn(name = "microphone_id")
     )
+    @JsonIgnore
     private List<Microphone> compatibleMicrophones = new ArrayList<>();
+
 
     @ManyToMany
     @JoinTable(
@@ -33,6 +37,7 @@ public class Receiver extends WirelessDevice {
         joinColumns = @JoinColumn(name = "receiver_id"),
         inverseJoinColumns = @JoinColumn(name = "frequency_band_id")
     )
+    @JsonIgnore
     private List<FrequencyBand> availableFrequencyBands = new ArrayList<>();
 
     public double calculateBundleCost(Microphone microphone) {
