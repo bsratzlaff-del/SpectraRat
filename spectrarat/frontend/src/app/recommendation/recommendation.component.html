@@ -20,13 +20,14 @@
         <div class="col-md-3">
           <label for="bandSelect" class="form-label fw-semibold">Confirmed Band</label>
           <select id="bandSelect" class="form-select form-select-lg border-2" [(ngModel)]="selectedBandId">
-            <option value="" selected disabled>Choose Band...</option>
-            @for (band of frequencyBands(); track band.id) {
-              <option [value]="band.id">
-                {{ band.bandName }}
-              </option>
-            }
-          </select>
+          <option value="" selected disabled>Choose Band...</option>
+          
+          @for (band of frequencyBands(); track band.id) {
+            <option [value]="band.id">
+              {{ band.bandName }}
+            </option>
+          }
+        </select>
         </div>
 
         <div class="col-md-3">

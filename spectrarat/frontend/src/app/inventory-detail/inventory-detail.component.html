@@ -2,7 +2,7 @@
   <div class="row mb-5">
     <div class="col-12 border-bottom pb-3">
       <h6 class="text-primary fw-bold text-uppercase">System Configuration</h6>
-      <h1 class="display-5 fw-bold">{{selectedReceiver.manufacturer}} {{selectedReceiver.modelName}}</h1>
+      <h1 class="display-5 fw-bold">{{selectedReceiver?.manufacturer}} {{selectedReceiver?.modelName}}</h1>
     </div>
   </div>
 
@@ -64,9 +64,10 @@
         <div class="mb-4">
           <label for="frequencyBand" class="form-label fw-bold">Confirmed Frequency Band</label>
           <select id="frequencyBand" [(ngModel)]="selectedBand" name="bandSelection" class="form-select border-2">
-            <option [ngValue]="null" disabled>-- Select Band --</option>
-            <option *ngFor="let res of analysisResults" [ngValue]="res.modelName">
-              {{res.modelName}} Band ({{res.matchPercentage}}% Clear)
+            <option value="" disabled selected>-- Select Band --</option>
+            
+            <option *ngFor="let band of (selectedReceiver?.frequencyBands || selectedReceiver?.compatibleBands || (selectedReceiver?.frequencyBand ? [selectedReceiver?.frequencyBand] : []))" [value]="band.bandName || band.band_name">
+              {{ band.bandName || band.band_name || 'Unnamed Band' }}
             </option>
           </select>
         </div>
