@@ -15,10 +15,10 @@ public class FrequencyBand {
     private String bandName;
 
     @Column(name = "min_frequency")
-    private double minFrequency;
+    private Double minFrequency;
 
     @Column(name = "max_frequency")
-    private double maxFrequency;
+    private Double maxFrequency;
 
     // Constructor for tests and convenience
     public FrequencyBand() {}
@@ -46,19 +46,19 @@ public class FrequencyBand {
         this.bandName = bandName;
     }
 
-    public double getMinFrequency() {
+    public Double getMinFrequency() {
         return minFrequency;
     }
 
-    public void setMinFrequency(double minFrequency) {
+    public void setMinFrequency(Double minFrequency) {
         this.minFrequency = minFrequency;
     }
 
-    public double getMaxFrequency() {
+    public Double getMaxFrequency() {
         return maxFrequency;
     }
 
-    public void setMaxFrequency(double maxFrequency) {
+    public void setMaxFrequency(Double maxFrequency) {
         this.maxFrequency = maxFrequency;
     }
 }
