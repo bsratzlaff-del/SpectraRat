@@ -5,8 +5,6 @@ import java.util.Collections;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import lombok.Getter;
-import lombok.Setter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,14 +16,17 @@ import lombok.Data;
 
 @Data
 @Entity
-@Getter
-@Setter
 @Table(name = "customers")
 public class Customer implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    // Explicit getter for ID to resolve potential build/IDE issues with Lombok.
+    public Long getId() {
+        return id;
+    }
 
     @NotBlank(message = "Username is required")
     @Column(unique = true, nullable = false)
