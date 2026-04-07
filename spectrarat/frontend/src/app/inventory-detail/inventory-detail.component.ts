@@ -64,11 +64,21 @@ export class InventoryDetailComponent implements OnInit {
   }
 
   addToCart() {
-    if (!this.selectedBand) {
-      alert('Please select a frequency band before adding to cart.');
+  // 1. Check if the user is logged in
+  // (Assuming currentUser is {} or null if not logged in)
+    if (!this.currentUser || !this.currentUser.id) {
+      alert('Authentication Required: Please sign in to save this configuration to your cart.');
+      this.router.navigate(['/login']); // Optional: send them straight to login
       return;
     }
 
+    // 2. Check if the band is selected
+    if (!this.selectedBand) {
+      alert('Selection Required: Please choose a confirmed frequency band (or use the scanner) before adding to cart.');
+      return;
+    }
+
+    // 3. If both pass, proceed with adding to cart
     const itemToStore = {
       businessId: this.currentUser?.id,
       receiverModel: `${this.selectedReceiver.manufacturer} ${this.selectedReceiver.modelName}`,
@@ -82,6 +92,8 @@ export class InventoryDetailComponent implements OnInit {
     const currentCart = JSON.parse(localStorage.getItem('spectraCart') || '[]');
     currentCart.push(itemToStore);
     localStorage.setItem('spectraCart', JSON.stringify(currentCart));
+    
+    console.log('Item successfully added to cart for user:', this.currentUser.id);
     this.router.navigate(['/cart']);
   }
 
