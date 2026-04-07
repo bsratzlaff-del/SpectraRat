@@ -100,9 +100,7 @@ export class LoginComponent implements OnInit {
       next: (user: any) => {
         // Save user session
         localStorage.setItem('currentUser', JSON.stringify(user));
-        
-        // Redirect to dashboard using Angular Router
-        this.router.navigate(['/dashboard']); 
+        window.location.href = '/dashboard'; 
       },
       error: (err) => {
         if (this.isRegisterMode) {
