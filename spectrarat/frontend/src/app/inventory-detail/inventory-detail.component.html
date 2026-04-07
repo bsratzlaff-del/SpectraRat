@@ -69,7 +69,7 @@
           <select id="frequencyBand" [(ngModel)]="selectedBand" name="bandSelection" class="form-select border-2">
             <option value="" disabled selected>-- Select Hardware Band --</option>
             <option *ngFor="let band of selectedReceiver?.availableFrequencyBands" [value]="band.bandName">
-              {{ band.bandName }} ({{ band.minFrequency }} - {{ band.maxFrequency }} MHz)
+              {{ band.bandName }} ({{ band.minFrequency }}-{{ band.maxFrequency }} MHz)
             </option>
           </select>
           <div class="form-text mt-2 text-muted">Select manually, or use the scanner above to auto-select the best option.</div>

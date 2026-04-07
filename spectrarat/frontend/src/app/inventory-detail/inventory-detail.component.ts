@@ -104,7 +104,27 @@ export class InventoryDetailComponent implements OnInit {
     }
 
     applyRecommendation(bandName: string) {
-      // When they click 'Apply' on one of the top 3, it snaps the dropdown to that band
-      this.selectedBand = bandName;
+      if (!bandName || !this.selectedReceiver?.availableFrequencyBands) return;
+
+      console.log("Attempting to match:", bandName);
+
+      // 1. Find the band in your hardware list that is mentioned in the recommendation string
+      const matchedBand = this.selectedReceiver.availableFrequencyBands.find((band: any) => 
+        bandName.includes(band.bandName) || band.bandName === bandName
+      );
+
+      if (matchedBand) {
+        // 2. Assign the EXACT value that the dropdown expects
+        this.selectedBand = matchedBand.bandName;
+        this.isAutoFilled = true;
+        console.log("Match found! Setting dropdown to:", matchedBand.bandName);
+      } else {
+        console.warn("No matching band found in the hardware list for:", bandName);
+        // Fallback: try setting it anyway in case it's a direct match
+        this.selectedBand = bandName;
+      }
+
+      // 3. Smooth scroll to the checkout area
+      document.getElementById('frequencyBand')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
