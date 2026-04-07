@@ -26,7 +26,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Valid @RequestBody Customer customer) {
         // Simple check for username
-        if (customerRepository.findByUsername(customer.getUsername()).isPresent()) {
+        if (customerRepository.findByUsernameIgnoreCase(customer.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: Username is already taken!");
         }
         
@@ -41,13 +41,23 @@ public class AuthController {
     // LOGIN endpoint
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody User loginRequest) { 
-        // We look for the customer by the username provided in the login request
-        Optional<Customer> customerOpt = customerRepository.findByUsername(loginRequest.getUsername());
+        System.out.println("--- Login Attempt ---");
+        System.out.println("Username: [" + loginRequest.getUsername() + "]");
+        
+        Optional<Customer> customerOpt = customerRepository.findByUsernameIgnoreCase(loginRequest.getUsername());
 
-        if (customerOpt.isPresent() && passwordEncoder.matches(loginRequest.getPassword(), customerOpt.get().getPassword())) {
-            Customer customer = customerOpt.get();
-            customer.setPassword(null); 
-            return ResponseEntity.ok(customer);
+        if (customerOpt.isPresent()) {
+            System.out.println("User found in database!");
+            boolean isMatch = passwordEncoder.matches(loginRequest.getPassword(), customerOpt.get().getPassword());
+            System.out.println("Password Match: " + isMatch);
+            
+            if (isMatch) {
+                Customer customer = customerOpt.get();
+                customer.setPassword(null); 
+                return ResponseEntity.ok(customer);
+            }
+        } else {
+            System.out.println("User NOT found in database.");
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Error: Invalid username or password");
