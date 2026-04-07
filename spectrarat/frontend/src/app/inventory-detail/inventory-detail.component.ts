@@ -21,6 +21,8 @@ export class InventoryDetailComponent implements OnInit {
   isAutoFilled: boolean = false;
   
   selectedBand: string = ''; 
+  recommendations: any[] = [];
+  loading: boolean = false;
   
   analysisResults: any[] = [];
   capsules = [
@@ -83,24 +85,26 @@ export class InventoryDetailComponent implements OnInit {
     this.router.navigate(['/cart']);
   }
 
-  analyzeBands() {
-    if (!this.zipCode || !this.selectedReceiver?.id) return;
+    analyzeBands() {
+      if (!this.zipCode || !this.selectedReceiver?.id) return;
 
-    this.recommendationService.getRecommendations(this.zipCode, this.selectedReceiver.id)
-      .subscribe((results: any[]) => {
-        if (results && results.length > 0) {
-          // FIXED: Safely finds the band with the highest match percentage
-          this.recommendedBand = results.reduce((prev, current) => 
-            (prev.matchPercentage > current.matchPercentage) ? prev : current
-          );
-        }
-      });
-  }
+      this.loading = true; // Optional: add a loading spinner state if you have it
+      this.recommendationService.getRecommendations(this.zipCode, this.selectedReceiver.id)
+        .subscribe({
+          next: (results: any[]) => {
+            // We take the top 3 results from the backend
+            this.recommendations = results.slice(0, 3);
+            this.loading = false;
+          },
+          error: (err) => {
+            console.error('Analysis failed', err);
+            this.loading = false;
+          }
+        });
+    }
 
-  // ADDED: This function matches the Apply button in your HTML!
-  applyRecommendation() {
-    if (this.recommendedBand) {
-      this.selectedBand = this.recommendedBand.modelName || this.recommendedBand.bandName;
+    applyRecommendation(bandName: string) {
+      // When they click 'Apply' on one of the top 3, it snaps the dropdown to that band
+      this.selectedBand = bandName;
     }
   }
-}

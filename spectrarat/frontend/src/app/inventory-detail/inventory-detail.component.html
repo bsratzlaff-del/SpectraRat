@@ -1,12 +1,3 @@
-<div class="row mb-5">
-  <div class="col-12 border-bottom pb-3">
-    <h6 class="text-primary fw-bold text-uppercase">System Configuration</h6>
-    <h1 class="display-5 fw-bold">{{selectedReceiver?.manufacturer}} {{selectedReceiver?.modelName}}</h1>
-  </div>
-</div>
-
-
-
 <div class="container py-5">
   <div class="row mb-5">
     <div class="col-12 border-bottom pb-3">
@@ -16,10 +7,11 @@
   </div>
 
   <div class="row g-5">
+
+
     <div class="col-lg-7">
       <div class="card border-0 shadow-sm p-4 mb-4 bg-white rounded-4">
         <h4 class="fw-bold mb-4">1. Choose Your Components</h4>
-        
         <div class="mb-4">
           <label for="microphoneCapsule" class="form-label fw-semibold">Select Microphone Capsule</label>
           <select id="microphoneCapsule" [(ngModel)]="selectedCapsule" class="form-select form-select-lg border-2">
@@ -27,35 +19,19 @@
               {{capsule.name}} - +${{capsule.price}}
             </option>
           </select>
-          <div class="form-text">Choose the capsule that best fits your vocal application.</div>
         </div>
-
         <div class="mb-2">
           <label for="systemQuantity" class="form-label fw-semibold">System Quantity</label>
           <div class="input-group w-50">
             <button class="btn btn-outline-secondary" (click)="quantity = quantity > 1 ? quantity - 1 : 1">-</button>
-            <input id="systemQuantity" type="number" [(ngModel)]="quantity" class="form-control text-center border-2" min="1" title="Number of systems to order">
+            <input id="systemQuantity" type="number" [(ngModel)]="quantity" class="form-control text-center border-2" min="1">
             <button class="btn btn-outline-secondary" (click)="quantity = quantity + 1">+</button>
           </div>
         </div>
       </div>
 
-      <div class="card border-0 bg-dark text-white p-4 rounded-4 shadow">
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="mb-0">Estimated Total</h5>
-            <small class="text-secondary">Including selected capsules x{{quantity}}</small>
-          </div>
-          <h2 class="fw-black mb-0">${{ calculateTotal() | number:'1.2-2' }}</h2>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-lg-5">
-      <div class="card border-0 shadow-lg p-4 rounded-4 bg-light">
-        <h4 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-primary me-2"></i>Deployment Zone</h4>
-        <p class="small text-muted">We'll scan the local FCC data to find the best frequency band for this hardware.</p>
-        
+      <div class="card border-0 shadow-lg p-4 mb-4 rounded-4 bg-light">
+        <h4 class="fw-bold mb-3"><i class="bi bi-geo-alt-fill text-primary me-2"></i>2. Spectrum Analysis</h4>
         <div class="mb-4">
           <label class="form-label fw-bold">Installation Zip Code</label>
           <div class="input-group">
@@ -64,31 +40,42 @@
           </div>
         </div>
 
-        <div *ngIf="recommendedBand" class="alert alert-success border-success mb-4 animate__animated animate__fadeIn">
-          <h6 class="alert-heading fw-bold"><i class="bi bi-check-circle-fill me-2"></i>Spectra Recommended</h6>
-          <p class="mb-2">The <strong>{{recommendedBand.modelName}}</strong> band has the highest clearance ({{recommendedBand.matchPercentage}}%).</p>
-          <button (click)="applyRecommendation()" class="btn btn-success btn-sm w-100">Apply to Configuration</button>
+        <div *ngIf="recommendations.length > 0" class="animate__animated animate__fadeIn">
+          <h6 class="fw-bold text-success mb-3"><i class="bi bi-graph-up-arrow me-2"></i>Top 3 Compatible Bands</h6>
+          <div *ngFor="let rec of recommendations" class="card border-0 shadow-sm mb-2 p-2 bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <span class="badge" [ngClass]="rec.matchPercentage >= 90 ? 'bg-success' : 'bg-warning'">
+                  {{rec.matchPercentage}}% Clear
+                </span>
+                <strong class="ms-2">{{rec.modelName}}</strong>
+              </div>
+              <button (click)="applyRecommendation(rec.modelName)" class="btn btn-outline-primary btn-sm">Select</button>
+            </div>
+          </div>
         </div>
+      </div>
 
+      <div class="card border-0 shadow-sm p-4 rounded-4 bg-white border-top border-primary border-4">
+        <h4 class="fw-bold mb-3">3. Finalize Configuration</h4>
+        
         <div class="mb-4">
           <label for="frequencyBand" class="form-label fw-bold">Confirmed Frequency Band</label>
           <select id="frequencyBand" [(ngModel)]="selectedBand" name="bandSelection" class="form-select border-2">
-            <option value="" disabled selected>-- Select Band --</option>
-            
-            <option *ngFor="let band of (selectedReceiver?.frequencyBands || selectedReceiver?.compatibleBands || (selectedReceiver?.frequencyBand ? [selectedReceiver?.frequencyBand] : []))" [value]="band.bandName || band.band_name">
-              {{ band.bandName || band.band_name || 'Unnamed Band' }}
+            <option value="" disabled selected>-- Select Hardware Band --</option>
+            <option *ngFor="let band of selectedReceiver?.availableFrequencyBands" [value]="band.bandName">
+              {{ band.bandName }} ({{ band.minFrequency }} - {{ band.maxFrequency }} MHz)
             </option>
           </select>
+          <div class="form-text mt-2 text-muted">Select manually, or use the scanner above to auto-select the best option.</div>
         </div>
 
         <button (click)="addToCart()" class="btn btn-primary w-100 py-3 fw-bold" [disabled]="!selectedBand">
             Add to Cart - ${{ calculateTotal() | number:'1.2-2' }}
         </button>
-        
-        <p *ngIf="!selectedBand" class="text-danger small text-center mt-3">
-          <i class="bi bi-exclamation-triangle me-1"></i> Selection required to finalize deployment.
+        <p *ngIf="!selectedBand" class="text-danger small text-center mt-3 mb-0">
+          <i class="bi bi-exclamation-triangle me-1"></i> Band selection required to proceed.
         </p>
       </div>
+
     </div>
-  </div>
-</div>
