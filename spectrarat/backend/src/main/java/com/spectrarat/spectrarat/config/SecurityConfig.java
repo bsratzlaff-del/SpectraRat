@@ -40,12 +40,12 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // CHANGE THIS LINE: Use OriginPatterns instead of Origins
-        configuration.setAllowedOriginPatterns(Arrays.asList("*")); 
+        // Using Pattern instead of Origin allows the "*" wildcard with credentials
+        configuration.setAllowedOrigins(List.of("http://localhost:4200", "http://158.23.58.74"));
         
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
-        configuration.setAllowCredentials(true); // Now this won't crash!
+        configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "X-Requested-With"));
+        configuration.setAllowCredentials(true); 
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
