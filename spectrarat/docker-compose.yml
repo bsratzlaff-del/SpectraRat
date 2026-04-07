@@ -7,7 +7,7 @@ services:
     container_name: spectrarat-db
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password123 # Change to match your properties file!
+      POSTGRES_PASSWORD: password123 
       POSTGRES_DB: spectrarat
     ports:
       - "5432:5432"
