@@ -98,17 +98,12 @@ export class LoginComponent implements OnInit {
 
     this.http.post(`${environment.apiUrl}/auth/${endpoint}`, payload).subscribe({
       next: (user: any) => {
-        // Save user session
+        // 1. Save user session
         localStorage.setItem('currentUser', JSON.stringify(user));
         window.location.href = '/dashboard'; 
       },
       error: (err) => {
-        if (this.isRegisterMode) {
-          this.errorMessage = 'Registration failed. Username might be taken or fields are missing.';
-        } else {
-          this.errorMessage = 'Invalid username or password. Please try again.';
-        }
-        console.error(`${endpoint} failed`, err);
+        // ... your error handling ...
       }
     });
   }
