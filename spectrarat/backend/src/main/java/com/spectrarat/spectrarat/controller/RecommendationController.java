@@ -19,7 +19,7 @@ import com.spectrarat.spectrarat.util.CsvUtil;
 
 import jakarta.servlet.http.HttpServletResponse;
 
-@CrossOrigin(origins = "*")
+@CrossOrigin(originPatterns = "*")
 @RestController
 @RequestMapping("/api/recommendations")
 public class RecommendationController {

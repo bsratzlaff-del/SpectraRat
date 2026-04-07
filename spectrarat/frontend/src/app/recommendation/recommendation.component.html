@@ -12,25 +12,12 @@
     <div class="card-body p-4 bg-light">
       <div class="row g-4 align-items-end">
         
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label class="form-label fw-semibold">Local Zip Code</label>
           <input type="text" [(ngModel)]="zipCode" class="form-control form-control-lg border-2" placeholder="e.g. 60601">
         </div>
 
-        <div class="col-md-3">
-          <label for="bandSelect" class="form-label fw-semibold">Confirmed Band</label>
-          <select id="bandSelect" class="form-select form-select-lg border-2" [(ngModel)]="selectedBandId">
-          <option value="" selected disabled>Choose Band...</option>
-          
-          @for (band of frequencyBands(); track band.id) {
-            <option [value]="band.id">
-              {{ band.bandName }}
-            </option>
-          }
-        </select>
-        </div>
-
-        <div class="col-md-3">
+        <div class="col-md-4">
           <label for="receiverSelect" class="form-label fw-semibold">Receiver Unit</label>
           <select id="receiverSelect" [(ngModel)]="selectedReceiverId" class="form-select form-select-lg border-2">
             <option *ngFor="let rx of receivers" [value]="rx.id">
@@ -39,7 +26,7 @@
           </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-4">
           <button (click)="analyzeSpectrum()" class="btn btn-primary btn-lg w-100 fw-bold shadow-sm" [disabled]="loading">
             <span *ngIf="loading" class="spinner-border spinner-border-sm me-2"></span>
             {{ loading ? 'ANALYZING...' : 'RUN ANALYSIS' }}
@@ -54,7 +41,7 @@
     <h3 class="mb-4 text-dark border-bottom pb-2">Top Frequency Candidates</h3>
     
     <div class="row g-4">
-      <div class="col-lg-4 col-md-6" *ngFor="let res of results">
+      <div class="col-lg-4 col-md-6" *ngFor="let res of results | slice:0:3">
         <div class="card h-100 border-0 shadow-sm transition-hover" 
              [ngClass]="{
                'border-top-success': res.matchPercentage >= 95,
