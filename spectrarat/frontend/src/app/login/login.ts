@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,7 @@ export class LoginComponent implements OnInit {
 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private authService = inject(AuthService);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
 
@@ -98,12 +100,17 @@ export class LoginComponent implements OnInit {
 
     this.http.post(`${environment.apiUrl}/auth/${endpoint}`, payload).subscribe({
       next: (user: any) => {
-        // 1. Save user session
+        // 1. Save the 'Sticky Note' in the browser
         localStorage.setItem('currentUser', JSON.stringify(user));
-        window.location.href = '/dashboard'; 
+        
+        // 2. 'Poke' the AuthService to broadcast the news to the Navbar
+        this.authService.setLoginStatus(true); 
+        
+        // 3. Move the user to the dashboard
+        this.router.navigate(['/dashboard']); 
       },
       error: (err) => {
-        // ... your error handling ...
+        this.errorMessage = 'Login failed. Please check your credentials.';
       }
     });
   }
