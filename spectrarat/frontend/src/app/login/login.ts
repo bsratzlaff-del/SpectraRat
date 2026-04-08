@@ -100,17 +100,18 @@ export class LoginComponent implements OnInit {
 
     this.http.post(`${environment.apiUrl}/auth/${endpoint}`, payload).subscribe({
       next: (user: any) => {
-        // 1. Save the 'Sticky Note' in the browser
+        // 1. Save the 'Sticky Note' so the app remembers the user
         localStorage.setItem('currentUser', JSON.stringify(user));
         
-        // 2. 'Poke' the AuthService to broadcast the news to the Navbar
+        // 2. Broadcast the login status to the AppComponent
         this.authService.setLoginStatus(true); 
         
-        // 3. Move the user to the dashboard
+        // 3. Navigate SMOOTHLY without reloading the page
         this.router.navigate(['/dashboard']); 
       },
       error: (err) => {
         this.errorMessage = 'Login failed. Please check your credentials.';
+        console.error('Auth error:', err);
       }
     });
   }
