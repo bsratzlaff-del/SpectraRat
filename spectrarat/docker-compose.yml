@@ -40,5 +40,5 @@ services:
       - backend
 
 volumes:
-  # Keeps your database data persistent between restarts!
+  # Keeps the database data persistent between restarts!
   postgres-data:
