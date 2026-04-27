@@ -1,24 +1,25 @@
-# STAGE 1: Build the application
+# STAGE 1: Build the application (Keep this as is)
 FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
-
-# Copy the pom.xml and download dependencies first (caches them for faster builds)
 COPY pom.xml .
 RUN mvn dependency:go-offline
-
-# Copy the actual source code and build it
 COPY src ./src
 RUN mvn clean package -DskipTests
 
 # STAGE 2: Run the application
-FROM eclipse-temurin:21-jre-alpine
+# CHANGE 1: Use 'jdk' instead of 'jre' to support the instrumentation agent
+FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
 
-# Copy the built .jar file from the 'build' stage above
+# Copy the built .jar file
 COPY --from=build /app/target/*.jar app.jar
 
-# Expose the port your Spring Boot app runs on
+# CHANGE 2: Copy the agent you downloaded into the container
+# Ensure 'agent.jar' is in your local /backend folder
+COPY agent.jar agent.jar
+
+# Expose the port
 EXPOSE 8082
 
-# Start the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# CHANGE 3: Update the Entrypoint to load the agent BEFORE the app starts
+ENTRYPOINT ["java", "-javaagent:agent.jar", "-jar", "app.jar"]
