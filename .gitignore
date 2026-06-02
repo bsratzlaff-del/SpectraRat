@@ -40,3 +40,7 @@ pom.xml.next
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
+
+#Oracle Terminal Login
+server_login.ps1
+powershell.ps1
