@@ -14,13 +14,12 @@ services:
 
   # 2. The Spring Boot Backend
   backend:
-    # CHANGE: Replace 'build' with 'image' to pull from your ACR
-    image: SpectraRatServer.azurecr.io/spectrarat-backend:latest
+    # CHANGED: Now building locally from the backend folder instead of pulling from Azure
+    build: ./backend
     container_name: spectrarat-backend
     ports:
       - "8082:8082"
     environment:
-      # FIX: Ensure the database name is complete (usually 'spectrarat')
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/spectrarat
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password123
