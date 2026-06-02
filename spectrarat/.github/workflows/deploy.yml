@@ -1,0 +1,100 @@
+name: CI/CD to Oracle Cloud Registry
+
+on:
+  push:
+    branches:
+      - main  # Triggers the pipeline only when you push to main
+
+env:
+  OCI_REGISTRY: iad.ocir.io # Replace 'iad' with your specific OCI region key
+  TENANCY_NAMESPACE: your_tenancy_namespace_here
+
+jobs:
+  # --- JOB 1: BUILD AND PUSH BACKEND ---
+  build-and-push-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build Backend with Maven
+        run: |
+          cd spectrarat-backend # Adjust path if your backend is in a subfolder
+          ./mvnw clean package -DskipTests
+
+      - name: Log in to OCI Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.OCI_REGISTRY }}
+          username: ${{ secrets.OCI_REGISTRY_USER }}
+          password: ${{ secrets.OCI_AUTH_TOKEN }}
+
+      - name: Build and Push Backend Image
+        run: |
+          docker build -t $OCI_REGISTRY/$TENANCY_NAMESPACE/spectrarat-backend:latest .
+          docker push $OCI_REGISTRY/$TENANCY_NAMESPACE/spectrarat-backend:latest
+
+  # --- JOB 2: BUILD AND PUSH FRONTEND ---
+  build-and-push-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install Dependencies & Build Angular
+        run: |
+          cd spectrarat-frontend # Adjust path if your frontend is in a subfolder
+          npm ci
+          npm run build -- --configuration=production
+
+      - name: Log in to OCI Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.OCI_REGISTRY }}
+          username: ${{ secrets.OCI_REGISTRY_USER }}
+          password: ${{ secrets.OCI_AUTH_TOKEN }}
+
+      - name: Build and Push Frontend Image
+        run: |
+          docker build -t $OCI_REGISTRY/$TENANCY_NAMESPACE/spectrarat-frontend:latest .
+          docker push $OCI_REGISTRY/$TENANCY_NAMESPACE/spectrarat-frontend:latest
+
+  # --- JOB 3: SSH INTO OCI VM AND DEPLOY ---
+  deploy-to-vm:
+    needs: [build-and-push-backend, build-and-push-frontend] # Only runs if both builds succeed
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Navigate to the directory where your docker-compose.yml lives on the VM
+            cd ~/spectrarat-deployment
+            
+            # Log Docker into the OCI registry inside the VM
+            echo "${{ secrets.OCI_AUTH_TOKEN }}" | docker login iad.ocir.io -u "${{ secrets.OCI_REGISTRY_USER }}" --password-stdin
+            
+            # Pull down the brand new images
+            docker compose pull
+            
+            # Re-launch the containers with zero downtime
+            docker compose up -d --remove-orphans
+            
+            # Clear out old, dangling images to save disk space on your VM
+            docker image prune -f
