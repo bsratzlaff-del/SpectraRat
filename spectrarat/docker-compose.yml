@@ -14,7 +14,6 @@ services:
 
   # 2. The Spring Boot Backend
   backend:
-    # CHANGED: Now building locally from the backend folder instead of pulling from Azure
     build: ./backend
     container_name: spectrarat-backend
     ports:
