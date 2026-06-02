@@ -1,0 +1,35 @@
+<div class="container py-5">
+  <div class="text-center mb-5 animate__animated animate__fadeIn">
+    <h1 class="display-4 fw-bold text-dark">Wireless <span class="text-primary">Catalog</span></h1>
+    <p class="lead text-secondary">Select a professional receiver to start your custom deployment configuration.</p>
+    <hr class="w-25 mx-auto border-primary border-2">
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <p class="mt-2">Loading hardware inventory...</p>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" *ngIf="!loading">
+    <div class="col" *ngFor="let rx of receivers">
+      <div class="card h-100 border-0 shadow-sm transition-hover rounded-4 overflow-hidden">
+        <div class="bg-light p-5 text-center product-image-container">
+          <i class="bi bi-broadcast display-1 text-primary-emphasis"></i>
+        </div>
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle uppercase px-3">Dual Channel</span>
+            <span class="text-muted small">ID: #{{rx.id}}</span>
+          </div>
+          <h4 class="card-title fw-bold text-dark mb-1">{{rx.manufacturer}}</h4>
+          <h5 class="text-secondary mb-3">{{rx.modelName}}</h5>
+          <p class="text-dark fw-semibold h5 mb-4">{{rx.price | currency:'USD'}}</p>
+          
+          <a [routerLink]="['/inventory', rx.id]" class="btn btn-dark w-100 py-2 fw-bold shadow-sm">
+            <i class="bi bi-sliders2 me-2"></i>Configure System
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

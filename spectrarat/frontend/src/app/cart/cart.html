@@ -1,0 +1,63 @@
+<div class="container py-5">
+  <h2 class="fw-bold mb-4">Your Equipment Cart</h2>
+
+  <div *ngIf="cartItems.length === 0" class="text-center py-5 bg-light rounded-4 border">
+    <i class="bi bi-cart-x display-1 text-secondary mb-3"></i>
+    <h3>Your cart is currently empty</h3>
+    <p class="text-muted">Head back to the catalog to configure your wireless systems.</p>
+    <a routerLink="/shop" class="btn btn-primary btn-lg px-5 mt-3">Browse Catalog</a>
+  </div>
+
+  <div *ngIf="cartItems.length > 0" class="card shadow-sm border-0 rounded-4 overflow-hidden">
+    <table class="table align-middle mb-0">
+      <thead class="bg-light">
+        <tr>
+          <th class="ps-4">System</th>
+          <th>Configuration</th>
+          <th>Qty</th>
+          <th>Price</th>
+          <th class="text-end pe-4"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of cartItems; let i = index" class="border-bottom">
+          <td class="ps-4">
+            <div class="fw-bold text-dark">{{item.receiverModel}}</div>
+          </td>
+          <td>
+            <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle me-2">
+              {{item.capsuleType}}
+            </span>
+            <span class="badge bg-secondary-subtle text-secondary-emphasis border border-secondary-subtle">
+              Band: {{item.assignedBand}}
+            </span>
+          </td>
+          <td>{{item.quantity}}</td>
+          <td class="fw-bold">{{item.cost | currency}}</td>
+          <td class="text-end pe-4">
+            <button (click)="removeItem(i)" class="btn btn-sm btn-link text-danger text-decoration-none">
+              <i class="bi bi-trash3 me-1"></i>Remove
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="card-footer bg-white p-4">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <a routerLink="/shop" class="btn btn-outline-primary">
+            <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+          </a>
+        </div>
+        <div class="col-md-6 text-end">
+          <h4 class="text-muted small mb-1">Estimated Total</h4>
+          <h2 class="fw-black mb-3">{{totalCartValue | currency}}</h2>
+          <button (click)="checkout()" class="btn btn-success btn-lg px-5 fw-bold shadow">
+            <i class="bi bi-check2-circle me-2"></i>FINAL CHECKOUT
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
