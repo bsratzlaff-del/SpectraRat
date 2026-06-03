@@ -17,7 +17,7 @@ services:
     build: ./backend
     container_name: spectrarat-backend
     ports:
-      - "8082:8082"
+      - "8082:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/spectrarat
       SPRING_DATASOURCE_USERNAME: postgres
