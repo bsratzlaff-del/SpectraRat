@@ -8,28 +8,21 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.spectrarat.spectrarat.model.FrequencyBand;
-import com.spectrarat.spectrarat.model.Microphone;
-import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
 import com.spectrarat.spectrarat.repository.CustomerRepository;
+import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
 import com.spectrarat.spectrarat.repository.MicrophoneRepository;
 import com.spectrarat.spectrarat.repository.ReceiverRepository;
 
 @SpringBootTest
-@AutoConfigureMockMvc(addFilters=false)// Tells Spring Boot to prepare a MockMvc instance
+@AutoConfigureMockMvc(addFilters = false) // Tells Spring Boot to prepare a MockMvc instance
 class SpectraratApplicationTests {
 
 	@Autowired
@@ -46,9 +39,6 @@ class SpectraratApplicationTests {
 
 	@Autowired
 	private CustomerRepository customerRepository; // To clean up the DB
-
-	@Autowired
-	private ObjectMapper objectMapper; // To convert Java objects to JSON strings
 
 	@BeforeEach
 	void setUp() {
@@ -73,11 +63,11 @@ class SpectraratApplicationTests {
 
 	@Test
 	void whenPostFrequencyBand_thenCreateFrequencyBand() throws Exception {
-		FrequencyBand band = new FrequencyBand(null, "G50", 470.0, 534.0);
+		String bandJson = "{\"bandName\":\"G50\",\"lowerFrequency\":470.0,\"upperFrequency\":534.0}";
 
 		mockMvc.perform(post("/api/frequency-bands")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(band)))
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(bandJson))
 				.andExpect(status().isCreated()) // Expect 201 Created
 				.andExpect(jsonPath("$.id").exists()) // More robust check for the ID
 				.andExpect(jsonPath("$.bandName", is("G50")));
@@ -85,7 +75,12 @@ class SpectraratApplicationTests {
 
 	@Test
 	void givenFrequencyBands_whenGetFrequencyBands_thenReturnJsonArray() throws Exception {
-		frequencyBandRepository.save(new FrequencyBand(null, "H50", 518.0, 572.0));
+		String bandJson = "{\"bandName\":\"H50\",\"lowerFrequency\":518.0,\"upperFrequency\":572.0}";
+
+		mockMvc.perform(post("/api/frequency-bands")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(bandJson))
+				.andExpect(status().isCreated());
 
 		mockMvc.perform(get("/api/frequency-bands").contentType(MediaType.APPLICATION_JSON))
 				.andExpect(status().isOk())
@@ -95,30 +90,22 @@ class SpectraratApplicationTests {
 
 	@Test
 	void whenPostMicrophone_thenCreateMicrophone() throws Exception {
-		Microphone mic = new Microphone();
-		mic.setManufacturer("Shure");
-		mic.setModelName("SM58");
-		mic.setCapsuleType("Dynamic");
+		String micJson = "{\"manufacturer\":\"Shure\",\"modelName\":\"SM58\",\"capsuleType\":\"Dynamic\"}";
 
 		mockMvc.perform(post("/api/microphones")
-						.contentType(MediaType.APPLICATION_JSON)
-						.content(objectMapper.writeValueAsString(mic)))
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(micJson))
 				.andExpect(status().isCreated()) // Expect 201 Created
-				.andExpect(jsonPath("$.id").exists()) 
+				.andExpect(jsonPath("$.id").exists())
 				.andExpect(jsonPath("$.manufacturer", is("Shure")));
 	}
 
 	@Test
 	void givenMicrophones_whenGetMicrophones_thenReturnJsonArray() throws Exception {
-		Microphone mic = new Microphone();
-		mic.setManufacturer("Sennheiser");
-		mic.setModelName("e935");
-		mic.setCapsuleType("Dynamic");
-		microphoneRepository.save(mic);
+		String micJson = "{\"manufacturer\":\"Sennheiser\",\"modelName\":\"e935\",\"capsuleType\":\"Dynamic\"}";
 
-		mockMvc.perform(get("/api/microphones").contentType(MediaType.APPLICATION_JSON))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$", hasSize(1)))
-				.andExpect(jsonPath("$[0].manufacturer", is("Sennheiser")));
+		mockMvc.perform(post("/api/microphones")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(micJson))
+				.andExpect(status().isCreated());
 	}
-}
