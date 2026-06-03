@@ -1,11 +1,12 @@
 package com.spectrarat.spectrarat.controller;
 
+import java.net.URI;
 import java.util.List;
 
-import org.springframework.http.HttpStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,9 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.spectrarat.spectrarat.model.FrequencyBand;
-import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 
 @RestController
@@ -24,15 +23,15 @@ import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
 @CrossOrigin(origins = "*")
 public class FrequencyBandController {
 
-    private final FrequencyBandRepository frequencyBandRepository;
+    private final JpaRepository<Object, Long> frequencyBandRepository;
 
-    public FrequencyBandController(FrequencyBandRepository frequencyBandRepository) {
+    public FrequencyBandController(JpaRepository<Object, Long> frequencyBandRepository) {
         this.frequencyBandRepository = frequencyBandRepository;
     }
 
     // This maps to: GET /api/frequency-bands
     @GetMapping
-    public List<FrequencyBand> getAllFrequencyBands() {
+    public List<Object> getAllFrequencyBands() {
         return frequencyBandRepository.findAll();
     }
 
@@ -43,7 +42,7 @@ public class FrequencyBandController {
 
     // Fixed: Removed redundant "/frequency-bands" from path
     @GetMapping("/{id}")
-    public ResponseEntity<FrequencyBand> getFrequencyBandById(@PathVariable Long id) {
+    public ResponseEntity<Object> getFrequencyBandById(@PathVariable Long id) {
         return frequencyBandRepository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -51,21 +50,17 @@ public class FrequencyBandController {
 
     // Fixed: Removed redundant "/frequency-bands" from path
     @PostMapping 
-    public ResponseEntity<FrequencyBand> createFrequencyBand(@RequestBody FrequencyBand frequencyBand) {
-        FrequencyBand savedBand = frequencyBandRepository.save(frequencyBand);
-        return new ResponseEntity<>(savedBand, HttpStatus.CREATED);
+    public ResponseEntity<Object> createFrequencyBand(@RequestBody Object frequencyBand) {
+        Object savedBand = frequencyBandRepository.save(frequencyBand);
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest().build().toUri();
+        return ResponseEntity.created(location).body(savedBand);
     }
 
     // Fixed: Removed redundant "/frequency-bands" from path
     @PutMapping("/{id}")
-    public ResponseEntity<FrequencyBand> updateFrequencyBand(@PathVariable Long id, @RequestBody FrequencyBand bandDetails) {
+    public ResponseEntity<Object> updateFrequencyBand(@PathVariable Long id, @RequestBody Object bandDetails) {
         return frequencyBandRepository.findById(id)
-                .map(existingBand -> {
-                    existingBand.setBandName(bandDetails.getBandName());
-                    existingBand.setMinFrequency(bandDetails.getMinFrequency());
-                    existingBand.setMaxFrequency(bandDetails.getMaxFrequency());
-                    return ResponseEntity.ok(frequencyBandRepository.save(existingBand));
-                })
+                .map(existingBand -> ResponseEntity.ok(frequencyBandRepository.save(bandDetails)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
@@ -75,7 +70,7 @@ public class FrequencyBandController {
         return frequencyBandRepository.findById(id)
                 .map(band -> {
                     frequencyBandRepository.delete(band);
-                    return ResponseEntity.noContent().build();
+                    return ResponseEntity.noContent().<Void>build();
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
