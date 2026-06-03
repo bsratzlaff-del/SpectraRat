@@ -16,10 +16,10 @@ COPY --from=build /app/target/*.jar app.jar
 
 # CHANGE 2: Copy the agent you downloaded into the container
 # Ensure 'agent.jar' is in your local /backend folder
-COPY agent.jar agent.jar
+# COPY agent.jar agent.jar
 
 # Expose the port
 EXPOSE 8082
 
 # CHANGE 3: Update the Entrypoint to load the agent BEFORE the app starts
-ENTRYPOINT ["java", "-javaagent:agent.jar", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
