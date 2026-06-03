@@ -1,7 +1,6 @@
 package com.spectrarat.spectrarat.config;
 
 import java.util.List;
-import java.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +40,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Using Pattern instead of Origin allows the "*" wildcard with credentials
-        configuration.setAllowedOrigins(List.of("http://localhost:4200", "http://158.23.58.74"));
+        configuration.setAllowedOrigins(List.of("http://localhost:4200", "http://193.122.198.189"));
         
         configuration.setAllowedMethods(java.util.List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(java.util.List.of("Authorization", "Content-Type", "X-Requested-With"));
