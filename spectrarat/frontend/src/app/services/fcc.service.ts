@@ -2,14 +2,13 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { FrequencyBand } from '../models/frequency-band'; // Import the interface
-import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class FccService {
   
   private http = inject(HttpClient); 
   
-  private baseUrl = `${environment.apiUrl}/frequency-bands`;
+  private baseUrl = `http://193.122.198.189/api/frequency-bands`;
 
   /**
    * Hits the /validate endpoint on your Spring Boot Controller.

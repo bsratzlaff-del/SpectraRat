@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,8 @@ import com.spectrarat.spectrarat.repository.FrequencyBandRepository;
 
 @RestController
 @RequestMapping("/api/frequency-bands")
+// NOTE: Allowing all origins for development. For production, you should restrict this.
+@CrossOrigin(origins = "*")
 public class FrequencyBandController {
 
     private final FrequencyBandRepository frequencyBandRepository;
@@ -72,7 +75,7 @@ public class FrequencyBandController {
         return frequencyBandRepository.findById(id)
                 .map(band -> {
                     frequencyBandRepository.delete(band);
-                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+                    return ResponseEntity.noContent().build();
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

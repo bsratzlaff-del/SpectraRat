@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { environment } from '../../environments/environment';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -98,7 +97,7 @@ export class LoginComponent implements OnInit {
       };
     }
 
-    this.http.post(`${environment.apiUrl}/auth/${endpoint}`, payload).subscribe({
+    this.http.post(`http://193.122.198.189/api/auth/${endpoint}`, payload).subscribe({
       next: (user: any) => {
         // 1. Save the 'Sticky Note' so the app remembers the user
         localStorage.setItem('currentUser', JSON.stringify(user));

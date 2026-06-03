@@ -2,7 +2,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule, CurrencyPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-cart',
@@ -49,7 +48,7 @@ export class CartComponent implements OnInit {
     }
 
     // This assumes a backend endpoint exists at /api/purchases/batch
-    this.http.post(`${environment.apiUrl}/purchases/batch`, this.cartItems).subscribe({
+    this.http.post(`http://193.122.198.189/api/purchases/batch`, this.cartItems).subscribe({
       next: () => {
         alert('Checkout successful!');
         localStorage.removeItem('spectraCart');
