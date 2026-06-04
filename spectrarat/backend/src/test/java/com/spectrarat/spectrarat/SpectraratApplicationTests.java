@@ -109,3 +109,4 @@ class SpectraratApplicationTests {
 					.content(micJson))
 				.andExpect(status().isCreated());
 	}
+}
