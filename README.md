@@ -3,4 +3,4 @@ Welcome to SpectraRat! This is the capstone project I recently completed, showin
 This project is one that I am passionate about, and plan on continuing to develop and scale up. This service would be very beneficial for a lot of people and want to see the final vision come to fruition. Any updates I implement after the initial deployment, i will write comments in this README.md file.
 
 
-June 6, 2026 - I updated the file to work as a CI/CD workflow, for ease of updating and pushing. Also changed to Oracle's OCI VM Cloud (ran out of credits on student Azure account, OCI is free for life)
+June 3, 2026 - I updated the file to work as a CI/CD workflow, for ease of updating and pushing. Also changed to Oracle's OCI VM Cloud (ran out of credits on student Azure account, OCI is free for life)
